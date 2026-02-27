@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 class Users extends BaseController
 {
     //yyyyy
+    
     public function index()
     {
         //
