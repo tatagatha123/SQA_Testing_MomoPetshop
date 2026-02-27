@@ -7,12 +7,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class Users extends BaseController
 {
-    // File ini dibuat untuk controller Users
-     // File ini dibuat untuk controller Users
-      // File ini dibuat untuk controller Users
-       // File ini dibuat untuk controller Users // File ini dibuat untuk controller Users
-        // File ini dibuat untuk controller Users
-         // File ini dibuat untuk controller Users
+    //yyyyy
     public function index()
     {
         //
