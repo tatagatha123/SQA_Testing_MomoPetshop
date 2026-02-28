@@ -13,7 +13,7 @@ class ProdukSeeder extends Seeder
                 'nama_produk' => 'Cat Choize Tuna Adult Makanan Kucing 800gram',
                 'harga' => 23000,
                 'stok' => 20,
-                'foto_produk' => null,
+                'foto_produk' => public/uploads/produk/1772317818_a74156729ace1263fd13.jpg,
                 'id_kategori' => 1,
                 'id_supplier' => 1,
             ],
