@@ -11,6 +11,8 @@
         :root {
             --blue: #4A90E2; --blue-dark: #2563c4; --blue-dim: #e8f2fc;
             --orange: #FFA726; --orange-dark: #cc7a00; --orange-dim: #fff4e5;
+            --red: #ef4444; --red-dim: #fef2f2;
+            --green: #22c55e; --green-dim: #f0fdf4;
             --bg: #f5f7fc; --surface: #ffffff; --border: #eaecf2;
             --text: #1a1f36; --muted: #8b93a7;
             --sidebar-w: 230px; --topbar-h: 62px;
@@ -19,7 +21,7 @@
         }
         html, body { height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
 
-        /* ── SIDEBAR ── */
+        /* SIDEBAR */
         .sidebar { position: fixed; left: 0; top: 0; width: var(--sidebar-w); height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: transform .25s ease; }
         .sidebar-logo { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 11px; }
         .logo-mark { width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0; background: linear-gradient(135deg, var(--blue), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 17px; }
@@ -39,7 +41,7 @@
         .logout-btn:hover { background: #fff0f0; color: #e53e3e; }
         .logout-btn:hover .nav-icon { color: #e53e3e; }
 
-        /* ── TOPBAR ── */
+        /* TOPBAR */
         .main { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
         .topbar { position: sticky; top: 0; z-index: 90; height: var(--topbar-h); background: rgba(245,247,252,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 26px; }
         .topbar-left { display: flex; align-items: center; gap: 12px; }
@@ -49,49 +51,61 @@
         .topbar-right { display: flex; align-items: center; gap: 10px; }
         .topbar-time { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--surface); padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
         .topbar-time i { color: var(--blue); font-size: 11px; }
+        .topbar-kasir { display: flex; align-items: center; gap: 8px; background: var(--surface); padding: 5px 13px 5px 6px; border-radius: 20px; border: 1px solid var(--border); }
+        .kasir-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--orange)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
+        .kasir-name { font-size: 12px; font-weight: 600; color: var(--text); }
 
-        /* ── CONTENT ── */
+        /* CONTENT */
         .content { padding: 24px 26px; flex: 1; }
 
-        /* ── TOOLBAR ── */
+        /* ALERT */
+        .alert { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 18px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; animation: slideDown .3s ease; }
+        .alert-success { background: var(--green-dim); color: #15803d; border: 1px solid #bbf7d0; }
+        .alert-error   { background: var(--red-dim); color: #b91c1c; border: 1px solid #fecaca; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+        /* TOOLBAR */
         .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .search-wrap { position: relative; }
         .search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 12px; pointer-events: none; }
         .search-wrap input { padding-left: 34px; width: 220px; }
-
-        /* ── FORM CONTROLS ── */
         .form-control { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; color: var(--text); background: var(--surface); outline: none; transition: border .15s, box-shadow .15s; }
         .form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
 
-        /* ── BTNS ── */
+        /* BTNS */
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all .15s; text-decoration: none; }
         .btn-blue { background: var(--blue); color: #fff; }
         .btn-blue:hover { background: var(--blue-dark); }
         .btn-orange { background: var(--orange); color: #fff; }
         .btn-orange:hover { background: var(--orange-dark); }
+        .btn-red { background: var(--red); color: #fff; }
+        .btn-red:hover { background: #dc2626; }
         .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
         .btn-ghost:hover { background: var(--bg); color: var(--text); }
         .btn-sm { padding: 5px 11px; font-size: 12px; }
-        .btn-danger { background: transparent; color: var(--orange-dark); border: 1px solid var(--orange-dim); }
-        .btn-danger:hover { background: var(--orange-dim); }
+        .btn-danger { background: transparent; color: #dc2626; border: 1px solid #fecaca; }
+        .btn-danger:hover { background: var(--red-dim); }
 
-        /* ── VIEW TOGGLE ── */
+        /* VIEW TOGGLE */
         .view-toggle { display: flex; gap: 4px; background: var(--bg); padding: 3px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
         .view-btn { padding: 5px 10px; border-radius: 6px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 13px; transition: all .15s; }
         .view-btn.active { background: var(--surface); color: var(--blue); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 
-        /* ── PRODUCT GRID ── */
+        /* PRODUCT GRID */
         .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 16px; }
         .prod-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; transition: transform .15s, box-shadow .15s; }
         .prod-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(74,144,226,0.13); }
-        .prod-img { height: 135px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 48px; border-bottom: 1px solid var(--border); }
+        .prod-img { height: 120px; background: var(--blue-dim); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
+        .prod-img i { font-size: 40px; color: var(--blue); opacity: .5; }
         .prod-body { padding: 14px; }
         .prod-name { font-size: 13.5px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
+        .prod-meta { font-size: 11px; color: var(--muted); margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
         .prod-price { font-size: 15px; font-weight: 800; color: var(--orange-dark); margin-top: 8px; }
+        .prod-stok { font-size: 11.5px; font-weight: 600; margin-top: 4px; }
         .prod-actions { display: flex; gap: 6px; margin-top: 10px; }
 
-        /* ── PRODUCT TABLE ── */
+        /* CARD TABLE */
         .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
         .card-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-size: 13.5px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
@@ -107,29 +121,33 @@
         .b-blue { background: var(--blue-dim); color: var(--blue-dark); }
         .b-orange { background: var(--orange-dim); color: var(--orange-dark); }
         .b-muted { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+        .b-red { background: var(--red-dim); color: #b91c1c; }
 
-        /* ── EMPTY STATE ── */
+        /* PRODUCT ICON */
+        .prod-icon-wrap { width: 36px; height: 36px; background: var(--blue-dim); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); flex-shrink: 0; }
+        .prod-icon-wrap i { font-size: 15px; color: var(--blue); opacity: .7; }
+
+        /* EMPTY STATE */
         .empty-state { text-align: center; padding: 56px 24px; color: var(--muted); }
         .empty-state i { font-size: 48px; color: var(--blue-dim); margin-bottom: 12px; display: block; }
         .empty-state p { font-weight: 600; font-size: 14px; }
 
-        /* ── MODAL ── */
+        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,20,40,0.45); backdrop-filter: blur(3px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.show { display: flex; }
         .modal { background: var(--surface); border-radius: var(--radius); width: 100%; max-width: 380px; box-shadow: 0 24px 64px rgba(0,0,0,0.15); animation: mIn .2s ease; }
         @keyframes mIn { from { opacity:0; transform: translateY(-12px) scale(0.98); } to { opacity:1; transform: none; } }
         .modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
         .modal-title { font-size: 15px; font-weight: 700; color: var(--text); }
-        .modal-close { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; transition: color .15s; }
+        .modal-close { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; }
         .modal-close:hover { color: var(--text); }
         .modal-body { padding: 24px 22px; text-align: center; }
         .modal-foot { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
 
-        /* ── SIDEBAR OVERLAY ── */
+        /* SIDEBAR OVERLAY */
         .s-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 99; }
         .s-overlay.show { display: block; }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 900px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: none; } .main { margin-left: 0; } .menu-toggle { display: block !important; } }
         @media (max-width: 600px) { .content { padding: 16px; } .topbar { padding: 0 16px; } .topbar-time { display: none; } .search-wrap input { width: 150px; } }
     </style>
@@ -138,10 +156,13 @@
 
 <div class="s-overlay" id="sOverlay" onclick="closeSidebar()"></div>
 
-<!-- ═══ SIDEBAR ═══ -->
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <div class="logo-mark">🐾</div>
+      <div class="sidebar-logo">
+        <div class="logo-mark" style="background:none; padding:0;">
+            <img src="/img/logo.png" alt="MomoPetshop Logo" 
+                 style="width:36px;height:36px;object-fit:contain;">
+        </div>
         <div>
             <div class="logo-text">MomoPetshop</div>
             <div class="logo-sub">Admin Panel</div>
@@ -173,13 +194,13 @@
         </a>
     </nav>
     <div class="sidebar-bottom">
-        <a href="/auth/logout" class="logout-btn">
+        <a href="/logout" class="logout-btn">
             <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span> Logout
         </a>
     </div>
 </aside>
 
-<!-- ═══ MAIN ═══ -->
+<!-- MAIN -->
 <div class="main">
     <header class="topbar">
         <div class="topbar-left">
@@ -192,9 +213,27 @@
         <div class="topbar-right">
             <div class="topbar-time"><i class="fas fa-clock"></i><span id="liveClock">--:--:--</span></div>
         </div>
+         <div class="topbar-kasir">
+                <div class="kasir-avatar"><?= strtoupper(substr(session()->get('username') ?? 'A', 0, 1)) ?></div>
+                <span class="kasir-name"><?= esc(session()->get('username') ?? 'Admin') ?></span>
+            </div>
     </header>
 
     <div class="content">
+
+        <!-- Flash Messages -->
+        <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success" id="flashAlert">
+            <i class="fas fa-check-circle"></i>
+            <?= session()->getFlashdata('success') ?>
+        </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-error" id="flashAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            <?= session()->getFlashdata('error') ?>
+        </div>
+        <?php endif; ?>
 
         <!-- Toolbar -->
         <div class="toolbar">
@@ -213,30 +252,39 @@
             </div>
         </div>
 
-        <!-- ── GRID VIEW ── -->
+        <!-- GRID VIEW -->
         <div id="viewGrid">
             <?php if (!empty($daftar_produk)): ?>
             <div class="prod-grid" id="prodGrid">
-                <?php
-                // Emoji mapping berdasarkan nama produk
-                $emojis = ['kucing'=>'','anjing'=>'','shampoo'=>'','vitamin'=>'','kandang'=>'','mainan'=>'','makanan'=>'','snack'=>''];
-                foreach ($daftar_produk as $p):
-                    $emoji = '🐾';
-                    foreach ($emojis as $k => $e) {
-                        if (stripos($p['nama'], $k) !== false) { $emoji = $e; break; }
-                    }
+                <?php foreach ($daftar_produk as $p):
+                    $stokRendah = $p['stok'] <= 5;
                 ?>
-                <div class="prod-card" data-nama="<?= strtolower(esc($p['nama'])) ?>">
-                    <div class="prod-img"><?= $emoji ?></div>
+                <div class="prod-card" data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
+                    <div class="prod-img">
+                        <i class="fas fa-box-open"></i>
+                    </div>
                     <div class="prod-body">
-                        <div class="prod-name"><?= esc($p['nama']) ?></div>
-                        <div style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:4px;">
-                            <i class="fas fa-tag" style="color:var(--blue);font-size:10px"></i> Produk
+                        <div class="prod-name"><?= esc($p['nama_produk']) ?></div>
+                        <div class="prod-meta">
+                            <i class="fas fa-tag" style="color:var(--blue);font-size:10px"></i>
+                            <?= esc($p['nama_kategori'] ?? '-') ?>
+                        </div>
+                        <div class="prod-meta">
+                            <i class="fas fa-truck" style="color:var(--muted);font-size:10px"></i>
+                            <?= esc($p['nama_supplier'] ?? '-') ?>
                         </div>
                         <div class="prod-price">Rp <?= number_format($p['harga'], 0, ',', '.') ?></div>
+                        <div class="prod-stok" style="color:<?= $stokRendah ? '#ef4444' : 'var(--muted)' ?>">
+                            <i class="fas fa-<?= $stokRendah ? 'exclamation-triangle' : 'cubes' ?>" style="font-size:10px"></i>
+                            Stok: <?= $p['stok'] ?><?= $stokRendah ? ' (Menipis!)' : '' ?>
+                        </div>
                         <div class="prod-actions">
-                            <a href="/produk/edit/<?= $loop ?? 0 ?>" class="btn btn-blue btn-sm" style="flex:1"><i class="fas fa-pen"></i> Edit</a>
-                            <button class="btn btn-danger btn-sm" onclick="konfirmasiHapus('<?= esc($p['nama']) ?>')"><i class="fas fa-trash"></i></button>
+                            <a href="/produk/edit/<?= $p['id_produk'] ?>" class="btn btn-blue btn-sm" style="flex:1">
+                                <i class="fas fa-pen"></i> Edit
+                            </a>
+                            <button class="btn btn-danger btn-sm" onclick="konfirmasiHapus(<?= $p['id_produk'] ?>, '<?= esc($p['nama_produk']) ?>')">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -251,7 +299,7 @@
             <?php endif; ?>
         </div>
 
-        <!-- ── LIST VIEW ── -->
+        <!-- LIST VIEW -->
         <div id="viewList" style="display:none;">
             <div class="card">
                 <div class="card-head">
@@ -264,34 +312,56 @@
                             <tr>
                                 <th>#</th>
                                 <th>Nama Produk</th>
+                                <th>Kategori</th>
+                                <th>Supplier</th>
                                 <th>Harga</th>
+                                <th>Stok</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($daftar_produk)): ?>
-                            <?php foreach ($daftar_produk as $i => $p): ?>
-                            <tr data-nama="<?= strtolower(esc($p['nama'])) ?>">
+                            <?php foreach ($daftar_produk as $i => $p):
+                                $stokRendah = $p['stok'] <= 5;
+                            ?>
+                            <tr data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
                                 <td style="color:var(--muted);font-size:12px"><?= $i + 1 ?></td>
                                 <td>
                                     <div style="display:flex;align-items:center;gap:10px;">
-                                        <div style="width:36px;height:36px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid var(--border)">🐾</div>
-                                        <strong><?= esc($p['nama']) ?></strong>
+                                        <div class="prod-icon-wrap">
+                                            <i class="fas fa-box"></i>
+                                        </div>
+                                        <strong><?= esc($p['nama_produk']) ?></strong>
                                     </div>
                                 </td>
+                                <td>
+                                    <span class="badge b-blue"><?= esc($p['nama_kategori'] ?? '-') ?></span>
+                                </td>
+                                <td style="color:var(--muted)"><?= esc($p['nama_supplier'] ?? '-') ?></td>
                                 <td style="font-weight:700;color:var(--orange-dark)">Rp <?= number_format($p['harga'], 0, ',', '.') ?></td>
                                 <td>
+                                    <span class="badge <?= $stokRendah ? 'b-red' : 'b-muted' ?>">
+                                        <?= $p['stok'] ?><?= $stokRendah ? ' ⚠' : '' ?>
+                                    </span>
+                                </td>
+                                <td>
                                     <div style="display:flex;gap:6px;">
-                                        <a href="/produk/edit/<?= $i ?>" class="btn btn-blue btn-sm"><i class="fas fa-pen"></i> Edit</a>
-                                        <button class="btn btn-danger btn-sm" onclick="konfirmasiHapus('<?= esc($p['nama']) ?>')"><i class="fas fa-trash"></i></button>
+                                        <a href="/produk/edit/<?= $p['id_produk'] ?>" class="btn btn-blue btn-sm">
+                                            <i class="fas fa-pen"></i> Edit
+                                        </a>
+                                        <button class="btn btn-danger btn-sm" onclick="konfirmasiHapus(<?= $p['id_produk'] ?>, '<?= esc($p['nama_produk']) ?>')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                             <?php else: ?>
-                            <tr><td colspan="4" class="empty-state" style="padding:40px">
-                                <i class="fas fa-box-open" style="font-size:36px;color:var(--blue-dim);display:block;margin-bottom:8px"></i>
-                                Belum ada produk
+                            <tr><td colspan="7">
+                                <div class="empty-state" style="padding:40px">
+                                    <i class="fas fa-box-open" style="font-size:36px;color:var(--blue-dim);display:block;margin-bottom:8px"></i>
+                                    Belum ada produk
+                                </div>
                             </td></tr>
                             <?php endif; ?>
                         </tbody>
@@ -311,7 +381,7 @@
             <button class="modal-close" onclick="tutupModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <div style="width:54px;height:54px;background:var(--orange-dim);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:var(--orange-dark)">
+            <div style="width:54px;height:54px;background:var(--red-dim);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:#ef4444">
                 <i class="fas fa-trash"></i>
             </div>
             <p style="font-weight:700;font-size:15px;margin-bottom:6px">Hapus produk ini?</p>
@@ -319,26 +389,36 @@
         </div>
         <div class="modal-foot">
             <button class="btn btn-ghost" onclick="tutupModal()">Batal</button>
-            <button class="btn btn-orange" id="hapusBtn"><i class="fas fa-trash"></i> Ya, Hapus</button>
+            <a href="#" id="hapusLink" class="btn btn-red"><i class="fas fa-trash"></i> Ya, Hapus</a>
         </div>
     </div>
 </div>
 
 <script>
-    // ── CLOCK ──
+    // CLOCK
     function tick() {
         document.getElementById('liveClock').textContent =
             new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
     tick(); setInterval(tick, 1000);
 
-    // ── SIDEBAR ──
+    // AUTO DISMISS FLASH ALERT
+    const flashAlert = document.getElementById('flashAlert');
+    if (flashAlert) {
+        setTimeout(() => {
+            flashAlert.style.transition = 'opacity .5s ease';
+            flashAlert.style.opacity = '0';
+            setTimeout(() => flashAlert.remove(), 500);
+        }, 4000);
+    }
+
+    // SIDEBAR
     function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sOverlay').classList.add('show'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sOverlay').classList.remove('show'); }
     window.addEventListener('resize', () => { document.querySelector('.menu-toggle').style.display = window.innerWidth <= 900 ? 'block' : 'none'; });
     window.dispatchEvent(new Event('resize'));
 
-    // ── VIEW TOGGLE ──
+    // VIEW TOGGLE
     function setView(v) {
         document.getElementById('viewGrid').style.display = v === 'grid' ? 'block' : 'none';
         document.getElementById('viewList').style.display = v === 'list' ? 'block' : 'none';
@@ -346,7 +426,7 @@
         document.getElementById('btnList').classList.toggle('active', v === 'list');
     }
 
-    // ── SEARCH / FILTER ──
+    // SEARCH
     function filterProd() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.prod-card').forEach(c => {
@@ -357,9 +437,10 @@
         });
     }
 
-    // ── MODAL HAPUS ──
-    function konfirmasiHapus(nama) {
+    // MODAL HAPUS
+    function konfirmasiHapus(id, nama) {
         document.getElementById('hapusNama').textContent = '"' + nama + '" akan dihapus permanen.';
+        document.getElementById('hapusLink').href = '/produk/delete/' + id;
         document.getElementById('modalHapus').classList.add('show');
     }
     function tutupModal() { document.getElementById('modalHapus').classList.remove('show'); }
