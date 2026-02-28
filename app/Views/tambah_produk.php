@@ -60,7 +60,8 @@
         .form-body { padding: 24px; }
         .form-group { margin-bottom: 18px; }
         .form-label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-        .form-label span { color: var(--red); margin-left: 2px; }
+        .form-label span.req { color: var(--red); margin-left: 2px; }
+        .form-label span.opt { color: var(--muted); font-weight: 400; font-size: 11px; margin-left: 4px; }
         .form-control { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; color: var(--text); background: var(--surface); outline: none; transition: border .15s, box-shadow .15s; }
         .form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
         .form-control.is-invalid { border-color: var(--red); }
@@ -70,6 +71,46 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         select.form-control { cursor: pointer; }
         .form-foot { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+
+        /* FOTO UPLOAD AREA */
+        .foto-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            background: var(--bg);
+            position: relative;
+        }
+        .foto-upload-area:hover { border-color: var(--blue); background: var(--blue-dim); }
+        .foto-upload-area.has-file { border-color: var(--blue); border-style: solid; background: var(--blue-dim); }
+        .foto-upload-area input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .foto-upload-icon { font-size: 28px; color: var(--blue); opacity: .5; margin-bottom: 8px; }
+        .foto-upload-text { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+        .foto-upload-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+        /* PREVIEW FOTO */
+        .foto-preview-box {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 10px 14px;
+            margin-bottom: 10px;
+        }
+        .foto-preview-box img {
+            width: 60px; height: 60px; object-fit: cover;
+            border-radius: 8px; border: 1px solid var(--border); flex-shrink: 0;
+        }
+        .foto-preview-info { flex: 1; }
+        .foto-preview-label { font-size: 11.5px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+        .foto-preview-sub { font-size: 11px; color: var(--muted); }
+        .foto-remove-btn {
+            background: none; border: none; color: var(--muted); cursor: pointer;
+            font-size: 14px; padding: 4px; border-radius: 6px; transition: all .15s;
+        }
+        .foto-remove-btn:hover { background: var(--red-dim); color: var(--red); }
 
         /* BTNS */
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all .15s; text-decoration: none; }
@@ -95,7 +136,10 @@
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-        <div class="logo-mark">🐾</div>
+        <div class="logo-mark" style="background:none; padding:0;">
+            <img src="/img/logo.png" alt="MomoPetshop Logo"
+                 style="width:36px;height:36px;object-fit:contain;">
+        </div>
         <div>
             <div class="logo-text">MomoPetshop</div>
             <div class="logo-sub">Admin Panel</div>
@@ -160,11 +204,9 @@
                 <div class="form-card-title"><?= esc($title) ?></div>
             </div>
 
-            <?php
-            // Tentukan action URL
-            $actionUrl = $produk ? '/produk/update/' . $produk['id_produk'] : '/produk/store';
-            ?>
-            <form action="<?= $actionUrl ?>" method="post">
+            <?php $actionUrl = $produk ? '/produk/update/' . $produk['id_produk'] : '/produk/store'; ?>
+
+            <form action="<?= $actionUrl ?>" method="post" enctype="multipart/form-data">
                 <?= csrf_field() ?>
 
                 <div class="form-body">
@@ -172,7 +214,7 @@
                     <!-- Nama Produk -->
                     <div class="form-group">
                         <label class="form-label" for="nama_produk">
-                            Nama Produk <span>*</span>
+                            Nama Produk <span class="req">*</span>
                         </label>
                         <input
                             type="text"
@@ -194,7 +236,7 @@
                     <div class="form-row">
                         <div class="form-group" style="margin-bottom:0">
                             <label class="form-label" for="harga">
-                                Harga (Rp) <span>*</span>
+                                Harga (Rp) <span class="req">*</span>
                             </label>
                             <input
                                 type="number"
@@ -216,7 +258,7 @@
 
                         <div class="form-group" style="margin-bottom:0">
                             <label class="form-label" for="stok">
-                                Stok <span>*</span>
+                                Stok <span class="req">*</span>
                             </label>
                             <input
                                 type="number"
@@ -239,7 +281,7 @@
                     <!-- Kategori -->
                     <div class="form-group" style="margin-top:18px">
                         <label class="form-label" for="id_kategori">
-                            Kategori <span>*</span>
+                            Kategori <span class="req">*</span>
                         </label>
                         <select
                             id="id_kategori"
@@ -264,7 +306,7 @@
                     <!-- Supplier -->
                     <div class="form-group">
                         <label class="form-label" for="id_supplier">
-                            Supplier <span>*</span>
+                            Supplier <span class="req">*</span>
                         </label>
                         <select
                             id="id_supplier"
@@ -282,6 +324,65 @@
                         <div class="invalid-feedback">
                             <i class="fas fa-exclamation-circle"></i>
                             <?= $validation->getError('id_supplier') ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- ══════════════════════════════════════
+                         FOTO PRODUK
+                    ══════════════════════════════════════ -->
+                    <div class="form-group" style="margin-bottom:0">
+                        <label class="form-label">
+                            Foto Produk
+                            <span class="opt">(opsional · JPG / PNG · maks 2 MB)</span>
+                        </label>
+
+                        <?php
+                        // Ambil foto saat ini dari controller (mode edit)
+                        $fotoSekarang = $foto_url ?? null;
+                        ?>
+
+                        <?php if ($fotoSekarang): ?>
+                        <!-- Foto yang sudah ada (mode edit) -->
+                        <div class="foto-preview-box" id="fotoSaatIni">
+                            <img src="<?= $fotoSekarang ?>" alt="Foto produk saat ini">
+                            <div class="foto-preview-info">
+                                <div class="foto-preview-label">Foto saat ini</div>
+                                <div class="foto-preview-sub">Upload gambar baru untuk mengganti</div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Preview sebelum upload -->
+                        <div class="foto-preview-box" id="newFotoPreview" style="display:none;">
+                            <img src="" alt="Preview" id="previewImg">
+                            <div class="foto-preview-info">
+                                <div class="foto-preview-label" id="previewNama">—</div>
+                                <div class="foto-preview-sub" id="previewUkuran">—</div>
+                            </div>
+                            <button type="button" class="foto-remove-btn" onclick="hapusPreview()" title="Batal pilih foto">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <!-- Drop zone -->
+                        <div class="foto-upload-area" id="uploadArea">
+                            <input
+                                type="file"
+                                id="foto_produk"
+                                name="foto_produk"
+                                accept="image/jpeg,image/png"
+                                onchange="previewFoto(this)"
+                            >
+                            <div class="foto-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <div class="foto-upload-text">Klik atau seret foto ke sini</div>
+                            <div class="foto-upload-sub">JPG / PNG · Maks 2 MB</div>
+                        </div>
+
+                        <?php if ($validation && $validation->hasError('foto_produk')): ?>
+                        <div class="invalid-feedback" style="margin-top:6px">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <?= $validation->getError('foto_produk') ?>
                         </div>
                         <?php endif; ?>
                     </div>
@@ -305,16 +406,52 @@
 </div>
 
 <script>
+    // CLOCK
     function tick() {
         document.getElementById('liveClock').textContent =
             new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
     tick(); setInterval(tick, 1000);
 
+    // SIDEBAR
     function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sOverlay').classList.add('show'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sOverlay').classList.remove('show'); }
     window.addEventListener('resize', () => { document.querySelector('.menu-toggle').style.display = window.innerWidth <= 900 ? 'block' : 'none'; });
     window.dispatchEvent(new Event('resize'));
+
+    // FOTO PREVIEW
+    function previewFoto(input) {
+        const file    = input.files && input.files[0];
+        const preview = document.getElementById('newFotoPreview');
+        const img     = document.getElementById('previewImg');
+        const nama    = document.getElementById('previewNama');
+        const ukuran  = document.getElementById('previewUkuran');
+        const area    = document.getElementById('uploadArea');
+
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            img.src     = e.target.result;
+            nama.textContent   = file.name;
+            ukuran.textContent = (file.size / 1024).toFixed(1) + ' KB';
+            preview.style.display = 'flex';
+            area.classList.add('has-file');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function hapusPreview() {
+        document.getElementById('foto_produk').value = '';
+        document.getElementById('newFotoPreview').style.display = 'none';
+        document.getElementById('uploadArea').classList.remove('has-file');
+    }
+
+    // Drag & drop highlight
+    const area = document.getElementById('uploadArea');
+    area.addEventListener('dragover',  e => { e.preventDefault(); area.style.borderColor = 'var(--blue)'; area.style.background = 'var(--blue-dim)'; });
+    area.addEventListener('dragleave', () => { area.style.borderColor = ''; area.style.background = ''; });
+    area.addEventListener('drop',      () => { area.style.borderColor = ''; area.style.background = ''; });
 </script>
 </body>
 </html>

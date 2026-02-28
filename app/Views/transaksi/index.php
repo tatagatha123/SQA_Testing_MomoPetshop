@@ -51,6 +51,9 @@
         .topbar-right { display: flex; align-items: center; gap: 10px; }
         .topbar-time { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--surface); padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
         .topbar-time i { color: var(--blue); font-size: 11px; }
+        .topbar-kasir { display: flex; align-items: center; gap: 8px; background: var(--surface); padding: 5px 13px 5px 6px; border-radius: 20px; border: 1px solid var(--border); }
+        .kasir-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--orange)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
+        .kasir-name { font-size: 12px; font-weight: 600; color: var(--text); }
 
         /* CONTENT */
         .content { padding: 24px 26px; flex: 1; }
@@ -78,9 +81,7 @@
         .search-wrap input { padding-left: 34px; width: 220px; }
         .form-control { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; color: var(--text); background: var(--surface); outline: none; transition: border .15s; }
         .form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
-        .topbar-kasir { display: flex; align-items: center; gap: 8px; background: var(--surface); padding: 5px 13px 5px 6px; border-radius: 20px; border: 1px solid var(--border); }
-        .kasir-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--orange)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
-        .kasir-name { font-size: 12px; font-weight: 600; color: var(--text); }
+
         /* BTNS */
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all .15s; text-decoration: none; }
         .btn-blue { background: var(--blue); color: #fff; }
@@ -150,9 +151,9 @@
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-      <div class="sidebar-logo">
+    <div class="sidebar-logo">
         <div class="logo-mark" style="background:none; padding:0;">
-            <img src="/img/logo.png" alt="MomoPetshop Logo" 
+            <img src="/img/logo.png" alt="MomoPetshop Logo"
                  style="width:36px;height:36px;object-fit:contain;">
         </div>
         <div>
@@ -202,13 +203,14 @@
                 <div class="breadcrumb">MomoPetshop › Transaksi</div>
             </div>
         </div>
+        <!-- ✅ FIX: jam & kasir sama-sama di dalam topbar-right -->
         <div class="topbar-right">
             <div class="topbar-time"><i class="fas fa-clock"></i><span id="liveClock">--:--:--</span></div>
-        </div>
-         <div class="topbar-kasir">
+            <div class="topbar-kasir">
                 <div class="kasir-avatar"><?= strtoupper(substr(session()->get('username') ?? 'A', 0, 1)) ?></div>
                 <span class="kasir-name"><?= esc(session()->get('username') ?? 'Admin') ?></span>
             </div>
+        </div>
     </header>
 
     <div class="content">
@@ -277,16 +279,12 @@
                         <?php $no = 1; foreach ($transaksi as $trx): ?>
                         <tr data-search="<?= esc($trx['id_transaksi']) ?> <?= esc($trx['tanggal']) ?>">
                             <td style="color:var(--muted);font-size:12px"><?= $no++ ?></td>
-                            <td>
-                                <span class="badge b-blue">#<?= $trx['id_transaksi'] ?></span>
-                            </td>
+                            <td><span class="badge b-blue">#<?= $trx['id_transaksi'] ?></span></td>
                             <td>
                                 <div style="font-weight:600"><?= date('d M Y', strtotime($trx['tanggal'])) ?></div>
                                 <div style="font-size:11px;color:var(--muted)"><?= date('H:i', strtotime($trx['tanggal'])) ?></div>
                             </td>
-                            <td>
-                                <span style="font-weight:700;color:var(--orange-dark)">Rp <?= number_format($trx['total'], 0, ',', '.') ?></span>
-                            </td>
+                            <td><span style="font-weight:700;color:var(--orange-dark)">Rp <?= number_format($trx['total'], 0, ',', '.') ?></span></td>
                             <td>
                                 <button class="btn btn-blue btn-sm" onclick="lihatDetail(<?= $trx['id_transaksi'] ?>)">
                                     <i class="fas fa-eye"></i> Detail
@@ -333,14 +331,12 @@
 </div>
 
 <script>
-    // CLOCK
     function tick() {
         document.getElementById('liveClock').textContent =
             new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
     tick(); setInterval(tick, 1000);
 
-    // AUTO DISMISS FLASH
     const flashAlert = document.getElementById('flashAlert');
     if (flashAlert) {
         setTimeout(() => {
@@ -350,13 +346,11 @@
         }, 4000);
     }
 
-    // SIDEBAR
     function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sOverlay').classList.add('show'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sOverlay').classList.remove('show'); }
     window.addEventListener('resize', () => { document.querySelector('.menu-toggle').style.display = window.innerWidth <= 900 ? 'block' : 'none'; });
     window.dispatchEvent(new Event('resize'));
 
-    // SEARCH
     function filterTrx() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('#trxTable tbody tr[data-search]').forEach(r => {
@@ -364,7 +358,6 @@
         });
     }
 
-    // MODAL DETAIL — fetch dari /transaksi/detail/{id}
     function lihatDetail(id) {
         document.getElementById('modalBodyContent').innerHTML = `
             <div class="loading-spinner">
@@ -378,7 +371,6 @@
             .then(data => {
                 const trx    = data.transaksi;
                 const detail = data.detail;
-
                 let itemsHtml = '';
                 if (detail && detail.length > 0) {
                     detail.forEach(d => {

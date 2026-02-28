@@ -96,8 +96,25 @@
         .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 16px; }
         .prod-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; transition: transform .15s, box-shadow .15s; }
         .prod-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(74,144,226,0.13); }
-        .prod-img { height: 120px; background: var(--blue-dim); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
-        .prod-img i { font-size: 40px; color: var(--blue); opacity: .5; }
+        .prod-img {
+            height: 140px;
+            background: var(--blue-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .prod-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform .2s;
+        }
+        .prod-card:hover .prod-img img { transform: scale(1.04); }
+        .prod-img i { font-size: 40px; color: var(--blue); opacity: .35; }
         .prod-body { padding: 14px; }
         .prod-name { font-size: 13.5px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
         .prod-meta { font-size: 11px; color: var(--muted); margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
@@ -123,9 +140,26 @@
         .b-muted { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
         .b-red { background: var(--red-dim); color: #b91c1c; }
 
-        /* PRODUCT ICON */
-        .prod-icon-wrap { width: 36px; height: 36px; background: var(--blue-dim); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); flex-shrink: 0; }
-        .prod-icon-wrap i { font-size: 15px; color: var(--blue); opacity: .7; }
+        .prod-thumb-wrap {
+            width: 40px;
+            height: 40px;
+            background: var(--blue-dim);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .prod-thumb-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .prod-thumb-wrap i { font-size: 15px; color: var(--blue); opacity: .7; }
 
         /* EMPTY STATE */
         .empty-state { text-align: center; padding: 56px 24px; color: var(--muted); }
@@ -158,9 +192,9 @@
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-      <div class="sidebar-logo">
+    <div class="sidebar-logo">
         <div class="logo-mark" style="background:none; padding:0;">
-            <img src="/img/logo.png" alt="MomoPetshop Logo" 
+            <img src="/img/logo.png" alt="MomoPetshop Logo"
                  style="width:36px;height:36px;object-fit:contain;">
         </div>
         <div>
@@ -212,11 +246,11 @@
         </div>
         <div class="topbar-right">
             <div class="topbar-time"><i class="fas fa-clock"></i><span id="liveClock">--:--:--</span></div>
-        </div>
-         <div class="topbar-kasir">
+            <div class="topbar-kasir">
                 <div class="kasir-avatar"><?= strtoupper(substr(session()->get('username') ?? 'A', 0, 1)) ?></div>
                 <span class="kasir-name"><?= esc(session()->get('username') ?? 'Admin') ?></span>
             </div>
+        </div>
     </header>
 
     <div class="content">
@@ -258,10 +292,22 @@
             <div class="prod-grid" id="prodGrid">
                 <?php foreach ($daftar_produk as $p):
                     $stokRendah = $p['stok'] <= 5;
+                    // Cek foto di folder
+                    $fotoUrl = null;
+                    foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
+                        if (file_exists(FCPATH . 'img/produk/' . $p['id_produk'] . '.' . $ext)) {
+                            $fotoUrl = base_url('img/produk/' . $p['id_produk'] . '.' . $ext);
+                            break;
+                        }
+                    }
                 ?>
                 <div class="prod-card" data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
                     <div class="prod-img">
-                        <i class="fas fa-box-open"></i>
+                        <?php if ($fotoUrl): ?>
+                            <img src="<?= $fotoUrl ?>" alt="<?= esc($p['nama_produk']) ?>">
+                        <?php else: ?>
+                            <i class="fas fa-box-open"></i>
+                        <?php endif; ?>
                     </div>
                     <div class="prod-body">
                         <div class="prod-name"><?= esc($p['nama_produk']) ?></div>
@@ -311,6 +357,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Foto</th>
                                 <th>Nama Produk</th>
                                 <th>Kategori</th>
                                 <th>Supplier</th>
@@ -323,16 +370,28 @@
                             <?php if (!empty($daftar_produk)): ?>
                             <?php foreach ($daftar_produk as $i => $p):
                                 $stokRendah = $p['stok'] <= 5;
+                                // Cek foto di folder
+                                $fotoUrl = null;
+                                foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
+                                    if (file_exists(FCPATH . 'img/produk/' . $p['id_produk'] . '.' . $ext)) {
+                                        $fotoUrl = base_url('img/produk/' . $p['id_produk'] . '.' . $ext);
+                                        break;
+                                    }
+                                }
                             ?>
                             <tr data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
                                 <td style="color:var(--muted);font-size:12px"><?= $i + 1 ?></td>
                                 <td>
-                                    <div style="display:flex;align-items:center;gap:10px;">
-                                        <div class="prod-icon-wrap">
+                                    <div class="prod-thumb-wrap">
+                                        <?php if ($fotoUrl): ?>
+                                            <img src="<?= $fotoUrl ?>" alt="<?= esc($p['nama_produk']) ?>">
+                                        <?php else: ?>
                                             <i class="fas fa-box"></i>
-                                        </div>
-                                        <strong><?= esc($p['nama_produk']) ?></strong>
+                                        <?php endif; ?>
                                     </div>
+                                </td>
+                                <td>
+                                    <strong><?= esc($p['nama_produk']) ?></strong>
                                 </td>
                                 <td>
                                     <span class="badge b-blue"><?= esc($p['nama_kategori'] ?? '-') ?></span>
@@ -357,7 +416,7 @@
                             </tr>
                             <?php endforeach; ?>
                             <?php else: ?>
-                            <tr><td colspan="7">
+                            <tr><td colspan="8">
                                 <div class="empty-state" style="padding:40px">
                                     <i class="fas fa-box-open" style="font-size:36px;color:var(--blue-dim);display:block;margin-bottom:8px"></i>
                                     Belum ada produk
