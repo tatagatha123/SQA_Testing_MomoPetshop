@@ -12,12 +12,12 @@ class TransaksiSeeder extends Seeder
             [
                 'id_user' => 1,
                 'tanggal' => date('Y-m-d H:i:s'),
-                'total' => 50000
+                'total' => 23000
             ],
             [
                 'id_user' => 2,
                 'tanggal' => date('Y-m-d H:i:s'),
-                'total' => 75000
+                'total' => 10000
             ],
         ];
 

@@ -18,13 +18,19 @@ class StokMasukSeeder extends Seeder
             [
                 'id_produk' => 2,
                 'id_supplier' => 2,
-                'jumlah' => 15,
+                'jumlah' => 50,
                 'tanggal' => date('Y-m-d'),
             ],
-                        [
+            [
                 'id_produk' => 3,
                 'id_supplier' => 3,
                 'jumlah' => 10,
+                'tanggal' => date('Y-m-d'),
+            ],
+            [
+                'id_produk' => 4,
+                'id_supplier' => 1,
+                'jumlah' => 20,
                 'tanggal' => date('Y-m-d'),
             ],
         ];

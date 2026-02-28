@@ -290,18 +290,20 @@
         <div id="viewGrid">
             <?php if (!empty($daftar_produk)): ?>
             <div class="prod-grid" id="prodGrid">
-                <?php foreach ($daftar_produk as $p):
-                    $stokRendah = $p['stok'] <= 5;
-                    // Cek foto di folder
-                    $fotoUrl = null;
-                    foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
-                        if (file_exists(FCPATH . 'img/produk/' . $p['id_produk'] . '.' . $ext)) {
-                            $fotoUrl = base_url('img/produk/' . $p['id_produk'] . '.' . $ext);
-                            break;
-                        }
-                    }
-                ?>
-                <div class="prod-card" data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
+<?php foreach ($daftar_produk as $i => $p): ?>
+
+<?php
+$stokRendah = $p['stok'] <= 5;
+                    
+$fotoUrl = null;
+
+if (!empty($p['foto_produk']) &&
+    is_file(FCPATH . 'uploads/produk/' . $p['foto_produk'])) {
+    $fotoUrl = base_url('uploads/produk/' . $p['foto_produk']);
+}
+?>
+
+                <div class="prod-card" data-nama="<?= strtolower($p['nama_produk']) ?>">
                     <div class="prod-img">
                         <?php if ($fotoUrl): ?>
                             <img src="<?= $fotoUrl ?>" alt="<?= esc($p['nama_produk']) ?>">
@@ -372,14 +374,13 @@
                                 $stokRendah = $p['stok'] <= 5;
                                 // Cek foto di folder
                                 $fotoUrl = null;
-                                foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
-                                    if (file_exists(FCPATH . 'img/produk/' . $p['id_produk'] . '.' . $ext)) {
-                                        $fotoUrl = base_url('img/produk/' . $p['id_produk'] . '.' . $ext);
-                                        break;
-                                    }
+
+                                if (!empty($p['foto_produk']) && 
+                                    file_exists(FCPATH . 'uploads/' . $p['foto_produk'])) {
+                                    $fotoUrl = base_url('uploads/' . $p['foto_produk']);
                                 }
                             ?>
-                            <tr data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
+                            <tr data-nama="<?= strtolower($p['nama_produk']) ?>">
                                 <td style="color:var(--muted);font-size:12px"><?= $i + 1 ?></td>
                                 <td>
                                     <div class="prod-thumb-wrap">

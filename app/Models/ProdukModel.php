@@ -19,6 +19,7 @@ class ProdukModel extends Model
         'stok',
         'id_kategori',
         'id_supplier',
+        'foto_produk',
     ];
 
     protected $validationRules = [

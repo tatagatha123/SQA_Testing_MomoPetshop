@@ -13,15 +13,15 @@ class DetailTransaksiSeeder extends Seeder
                 'id_transaksi' => 1,
                 'id_produk' => 1,
                 'qty' => 1,
-                'harga' => 50000,
-                'subtotal' => 50000
+                'harga' => 23000,
+                'subtotal' => 23000
             ],
             [
                 'id_transaksi' => 2,
                 'id_produk' => 2,
                 'qty' => 1,
-                'harga' => 75000,
-                'subtotal' => 75000
+                'harga' => 10000,
+                'subtotal' => 10000
             ],
         ];
 

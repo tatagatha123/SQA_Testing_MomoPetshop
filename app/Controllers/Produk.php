@@ -5,82 +5,42 @@ namespace App\Controllers;
 use App\Models\ProdukModel;
 use App\Models\KategoriModel;
 use App\Models\SupplierModel;
+use App\Models\StokMasukModel;
 
 class Produk extends BaseController
 {
-    protected ProdukModel   $produkModel;
+    protected ProdukModel $produkModel;
     protected KategoriModel $kategoriModel;
     protected SupplierModel $supplierModel;
+    protected StokMasukModel $stokMasukModel;
 
     public function __construct()
     {
-        $this->produkModel   = new ProdukModel();
-        $this->kategoriModel = new KategoriModel();
-        $this->supplierModel = new SupplierModel();
+        $this->produkModel    = new ProdukModel();
+        $this->kategoriModel  = new KategoriModel();
+        $this->supplierModel  = new SupplierModel();
+        $this->stokMasukModel = new StokMasukModel();
     }
 
-    // ─────────────────────────────────────────
-    // Helper: cari path foto produk
-    // ─────────────────────────────────────────
-    private function getFotoPath(int $id): ?string
-    {
-        foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
-            if (file_exists(FCPATH . 'img/produk/' . $id . '.' . $ext)) {
-                return base_url('img/produk/' . $id . '.' . $ext);
-            }
-        }
-        return null;
-    }
-
-    // ─────────────────────────────────────────
-    // Helper: hapus foto produk dari folder
-    // ─────────────────────────────────────────
-    private function hapusFoto(int $id): void
-    {
-        $savePath = FCPATH . 'img/produk/';
-        foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
-            $file = $savePath . $id . '.' . $ext;
-            if (file_exists($file)) unlink($file);
-        }
-    }
-
-    // ─────────────────────────────────────────
-    // Helper: simpan foto upload ke folder
-    // ─────────────────────────────────────────
-    private function simpanFoto(int $id): void
-    {
-        $foto = $this->request->getFile('foto_produk');
-        if ($foto && $foto->isValid() && ! $foto->hasMoved()) {
-            $savePath = FCPATH . 'img/produk/';
-            if (! is_dir($savePath)) mkdir($savePath, 0775, true);
-            $this->hapusFoto($id); // hapus foto lama dulu
-            $ext = strtolower($foto->getClientExtension());
-            $foto->move($savePath, $id . '.' . $ext);
-        }
-    }
-
-    // ─────────────────────────────────────────
-    // LIST — GET /produk
-    // ─────────────────────────────────────────
+    // ===============================
+    // LIST
+    // ===============================
     public function index(): string
     {
-        $data = [
-            'menu'            => 'produk',
-            'nama_toko'       => 'Momo Petshop 🐶🐱',
-            'daftar_produk'   => $this->produkModel->getAllWithRelasi(),
-            'notif_transaksi' => 0,
-            'title'           => 'Manajemen Produk',
-        ];
-
-        return view('produk', $data);
+        return view('produk', [
+            'menu'          => 'produk',
+            'nama_toko'     => 'Momo Petshop 🐶🐱',
+            'daftar_produk' => $this->produkModel->getAllWithRelasi(),
+            'title'         => 'Manajemen Produk',
+        ]);
     }
 
-    // ─────────────────────────────────────────
-    // FORM TAMBAH — GET /produk/tambah
-    // ─────────────────────────────────────────
+    // ===============================
+    // FORM TAMBAH
+    // ===============================
     public function tambah(): string
     {
-        $data = [
+        return view('tambah_produk', [
             'menu'       => 'produk',
             'nama_toko'  => 'Momo Petshop 🐶🐱',
             'title'      => 'Tambah Produk',
@@ -88,14 +48,12 @@ class Produk extends BaseController
             'kategoris'  => $this->kategoriModel->getForDropdown(),
             'suppliers'  => $this->supplierModel->findAll(),
             'validation' => null,
-        ];
-
-        return view('tambah_produk', $data);
+        ]);
     }
 
-    // ─────────────────────────────────────────
-    // SIMPAN — POST /produk/store
-    // ─────────────────────────────────────────
+    // ===============================
+    // STORE (UPLOAD + AUTO STOK MASUK)
+    // ===============================
     public function store()
     {
         $rules = [
@@ -104,26 +62,10 @@ class Produk extends BaseController
             'stok'        => 'required|integer',
             'id_kategori' => 'required|integer',
             'id_supplier' => 'required|integer',
-            'foto_produk' => 'permit_empty|is_image[foto_produk]|max_size[foto_produk,2048]|ext_in[foto_produk,jpg,jpeg,png]',
+            'foto_produk' => 'permit_empty|uploaded[foto_produk]|is_image[foto_produk]|max_size[foto_produk,2048]'
         ];
 
-        $messages = [
-            'nama_produk' => [
-                'required'   => 'Nama produk wajib diisi.',
-                'max_length' => 'Nama produk maksimal 255 karakter.',
-            ],
-            'harga'       => ['required' => 'Harga wajib diisi.', 'numeric' => 'Harga harus angka.'],
-            'stok'        => ['required' => 'Stok wajib diisi.', 'integer' => 'Stok harus angka.'],
-            'id_kategori' => ['required' => 'Kategori wajib dipilih.'],
-            'id_supplier' => ['required' => 'Supplier wajib dipilih.'],
-            'foto_produk' => [
-                'is_image'  => 'File harus berupa gambar.',
-                'max_size'  => 'Ukuran foto maksimal 2MB.',
-                'ext_in'    => 'Format foto harus JPG atau PNG.',
-            ],
-        ];
-
-        if (! $this->validate($rules, $messages)) {
+        if (! $this->validate($rules)) {
             return view('tambah_produk', [
                 'menu'       => 'produk',
                 'nama_toko'  => 'Momo Petshop 🐶🐱',
@@ -135,28 +77,57 @@ class Produk extends BaseController
             ]);
         }
 
-        $id = $this->produkModel->insert([
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        // ===============================
+        // HANDLE UPLOAD FOTO
+        // ===============================
+        $file = $this->request->getFile('foto_produk');
+        $namaFile = null;
+
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $namaFile = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/produk', $namaFile);
+        }
+
+        // ===============================
+        // INSERT KE PRODUK
+        // ===============================
+        $idProduk = $this->produkModel->insert([
             'nama_produk' => $this->request->getPost('nama_produk'),
             'harga'       => $this->request->getPost('harga'),
             'stok'        => $this->request->getPost('stok'),
             'id_kategori' => $this->request->getPost('id_kategori'),
             'id_supplier' => $this->request->getPost('id_supplier'),
+            'foto_produk' => $namaFile,
         ]);
 
-        $this->simpanFoto((int) $id);
+        // ===============================
+        // AUTO INSERT KE STOK MASUK
+        // ===============================
+        $this->stokMasukModel->insert([
+            'id_produk'   => $idProduk,
+            'id_supplier' => $this->request->getPost('id_supplier'),
+            'jumlah'      => $this->request->getPost('stok'),
+            'tanggal'     => date('Y-m-d H:i:s'),
+        ]);
 
-        return redirect()->to('/produk')->with('success', 'Produk berhasil ditambahkan.');
+        $db->transComplete();
+
+        return redirect()->to('/produk')
+            ->with('success', 'Produk berhasil ditambahkan dan otomatis masuk ke stok masuk.');
     }
 
-    // ─────────────────────────────────────────
-    // FORM EDIT — GET /produk/edit/{id}
-    // ─────────────────────────────────────────
+    // ===============================
+    // EDIT
+    // ===============================
     public function edit(int $id): string
     {
         $produk = $this->produkModel->find($id);
 
         if (! $produk) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Produk dengan ID $id tidak ditemukan.");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Produk tidak ditemukan.");
         }
 
         return view('tambah_produk', [
@@ -164,52 +135,37 @@ class Produk extends BaseController
             'nama_toko'  => 'Momo Petshop 🐶🐱',
             'title'      => 'Edit Produk',
             'produk'     => $produk,
-            'foto_url'   => $this->getFotoPath($id),
             'kategoris'  => $this->kategoriModel->getForDropdown(),
             'suppliers'  => $this->supplierModel->findAll(),
             'validation' => null,
         ]);
     }
 
-    // ─────────────────────────────────────────
-    // UPDATE — POST /produk/update/{id}
-    // ─────────────────────────────────────────
+    // ===============================
+    // UPDATE (DENGAN GANTI FOTO)
+    // ===============================
     public function update(int $id)
     {
         $produk = $this->produkModel->find($id);
 
         if (! $produk) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Produk dengan ID $id tidak ditemukan.");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Produk tidak ditemukan.");
         }
 
-        $rules = [
-            'nama_produk' => 'required|max_length[255]',
-            'harga'       => 'required|numeric',
-            'stok'        => 'required|integer',
-            'id_kategori' => 'required|integer',
-            'id_supplier' => 'required|integer',
-            'foto_produk' => 'permit_empty|is_image[foto_produk]|max_size[foto_produk,2048]|ext_in[foto_produk,jpg,jpeg,png]',
-        ];
+        $file = $this->request->getFile('foto_produk');
+        $namaFile = $produk['foto_produk'];
 
-        $messages = [
-            'foto_produk' => [
-                'is_image'  => 'File harus berupa gambar.',
-                'max_size'  => 'Ukuran foto maksimal 2MB.',
-                'ext_in'    => 'Format foto harus JPG atau PNG.',
-            ],
-        ];
+        // Jika upload foto baru
+        if ($file && $file->isValid() && !$file->hasMoved()) {
 
-        if (! $this->validate($rules, $messages)) {
-            return view('tambah_produk', [
-                'menu'       => 'produk',
-                'nama_toko'  => 'Momo Petshop 🐶🐱',
-                'title'      => 'Edit Produk',
-                'produk'     => $produk,
-                'foto_url'   => $this->getFotoPath($id),
-                'kategoris'  => $this->kategoriModel->getForDropdown(),
-                'suppliers'  => $this->supplierModel->findAll(),
-                'validation' => $this->validator,
-            ]);
+            // Hapus foto lama jika ada
+            if (!empty($produk['foto_produk']) && 
+                file_exists(FCPATH . 'uploads/produk/' . $produk['foto_produk'])) {
+                unlink(FCPATH . 'uploads/produk/' . $produk['foto_produk']);
+            }
+
+            $namaFile = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/produk', $namaFile);
         }
 
         $this->produkModel->update($id, [
@@ -218,27 +174,33 @@ class Produk extends BaseController
             'stok'        => $this->request->getPost('stok'),
             'id_kategori' => $this->request->getPost('id_kategori'),
             'id_supplier' => $this->request->getPost('id_supplier'),
+            'foto_produk' => $namaFile,
         ]);
 
-        $this->simpanFoto($id);
-
-        return redirect()->to('/produk')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->to('/produk')
+            ->with('success', 'Produk berhasil diperbarui.');
     }
 
-    // ─────────────────────────────────────────
-    // HAPUS — GET /produk/delete/{id}
-    // ─────────────────────────────────────────
+    // ===============================
+    // DELETE (HAPUS FOTO JUGA)
+    // ===============================
     public function delete(int $id)
     {
         $produk = $this->produkModel->find($id);
 
         if (! $produk) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Produk dengan ID $id tidak ditemukan.");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Produk tidak ditemukan.");
+        }
+
+        // Hapus file foto jika ada
+        if (!empty($produk['foto_produk']) && 
+            file_exists(FCPATH . 'uploads/produk/' . $produk['foto_produk'])) {
+            unlink(FCPATH . 'uploads/produk/' . $produk['foto_produk']);
         }
 
         $this->produkModel->delete($id);
-        $this->hapusFoto($id);
 
-        return redirect()->to('/produk')->with('success', 'Produk berhasil dihapus.');
+        return redirect()->to('/produk')
+            ->with('success', 'Produk berhasil dihapus.');
     }
 }
