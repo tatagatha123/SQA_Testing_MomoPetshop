@@ -18,7 +18,7 @@ class ProdukSeeder extends Seeder
                 'id_supplier' => 1,
             ],
             [
-                'nama_produk' => 'Kalung Kucing Lonceng',
+                'nama_produk' => 'Kalung Kucing Lonceng Polos Premium',
                 'harga' => 10000,
                 'stok' => 50,
                 'foto_produk' => '1772321897_f5b24620c7a9c51b0a45.jpg',
