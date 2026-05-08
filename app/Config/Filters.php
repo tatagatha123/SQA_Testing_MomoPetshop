@@ -74,9 +74,14 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf',
-            // 'invalidchars',
+            'csrf' => ['except' => ['login', 
+                                    'register',
+                                    'user/store',
+                                    'produk/store',
+                                    'produk/update',
+                                    'transaksi/simpan']], // Nonaktifkan CSRF untuk route login, register, dan user/store
         ],
+
         'after' => [
             'toolbar',
             // 'honeypot',

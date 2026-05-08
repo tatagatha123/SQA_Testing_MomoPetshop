@@ -23,8 +23,11 @@
         </report>
     </coverage>
     <testsuites>
-        <testsuite name="App">
+        <testsuite name="Unit">
             <directory>./tests</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>./tests/integrationtest</directory>
         </testsuite>
     </testsuites>
     <logging>
