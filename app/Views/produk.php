@@ -87,84 +87,32 @@
         .btn-danger { background: transparent; color: #dc2626; border: 1px solid #fecaca; }
         .btn-danger:hover { background: var(--red-dim); }
 
-        /* VIEW TOGGLE */
-        .view-toggle { display: flex; gap: 4px; background: var(--bg); padding: 3px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-        .view-btn { padding: 5px 10px; border-radius: 6px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 13px; transition: all .15s; }
-        .view-btn.active { background: var(--surface); color: var(--blue); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-
         /* PRODUCT GRID */
         .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 16px; }
         .prod-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; transition: transform .15s, box-shadow .15s; display: flex; flex-direction: column; }
         .prod-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(74,144,226,0.13); }
-        .prod-img {
-            height: 140px;
-            background: var(--blue-dim);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid var(--border);
-            overflow: hidden;
-        }
-        .prod-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-            transition: transform .2s;
-        }
+        .prod-img { height: 140px; background: var(--blue-dim); display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); overflow: hidden; }
+        .prod-img img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transition: transform .2s; }
         .prod-card:hover .prod-img img { transform: scale(1.04); }
         .prod-img i { font-size: 40px; color: var(--blue); opacity: .35; }
         .prod-body { padding: 14px; display: flex; flex-direction: column; flex: 1; }
-        .prod-name { font-size: 13.5px; font-weight: 700; margin-bottom: 5px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+        .prod-name { font-size: 13.5px; font-weight: 700; margin-bottom: 5px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .prod-meta { font-size: 11px; color: var(--muted); margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
         .prod-price { font-size: 15px; font-weight: 800; color: var(--orange-dark); margin-top: 8px; }
         .prod-stok { font-size: 11.5px; font-weight: 600; margin-top: 4px; }
-        .prod-actions { display: flex; gap: 6px; margin-top: auto; }
-
-        /* CARD TABLE */
-        .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
-        .card-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .card-title { font-size: 13.5px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-        .card-title i { color: var(--blue); }
-        .tw { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        thead tr { border-bottom: 1px solid var(--border); }
-        th { padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); text-align: left; white-space: nowrap; }
-        td { padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
-        tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: var(--bg); }
-        .badge { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
-        .b-blue { background: var(--blue-dim); color: var(--blue-dark); }
-        .b-orange { background: var(--orange-dim); color: var(--orange-dark); }
-        .b-muted { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
-        .b-red { background: var(--red-dim); color: #b91c1c; }
-
-        .prod-thumb-wrap {
-            width: 40px;
-            height: 40px;
-            background: var(--blue-dim);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border);
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        .prod-thumb-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-        }
-        .prod-thumb-wrap i { font-size: 15px; color: var(--blue); opacity: .7; }
+        .prod-actions { display: flex; gap: 6px; margin-top: auto; padding-top: 10px; }
 
         /* EMPTY STATE */
         .empty-state { text-align: center; padding: 56px 24px; color: var(--muted); }
         .empty-state i { font-size: 48px; color: var(--blue-dim); margin-bottom: 12px; display: block; }
         .empty-state p { font-weight: 600; font-size: 14px; }
+
+        /* EMPTY SEARCH */
+        .empty-search { display: none; text-align: center; padding: 48px 24px; color: var(--muted); background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); }
+        .empty-search i { font-size: 44px; margin-bottom: 14px; display: block; color: var(--blue-dim); }
+        .empty-search .es-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .empty-search .es-sub { font-size: 12.5px; color: var(--muted); font-weight: 400; }
+        .empty-search .es-keyword { color: var(--blue); font-weight: 700; }
 
         /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,20,40,0.45); backdrop-filter: blur(3px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px; }
@@ -194,8 +142,7 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <div class="logo-mark" style="background:none; padding:0;">
-            <img src="/img/logo.png" alt="MomoPetshop Logo"
-                 style="width:36px;height:36px;object-fit:contain;">
+            <img src="/img/logo.png" alt="MomoPetshop Logo" style="width:36px;height:36px;object-fit:contain;">
         </div>
         <div>
             <div class="logo-text">MomoPetshop</div>
@@ -274,14 +221,11 @@
             <div class="toolbar-left">
                 <div class="search-wrap">
                     <i class="fas fa-search"></i>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Cari produk..." oninput="filterProd()">
+                    <input type="text" class="form-control" id="searchInput"
+                           placeholder="Cari produk..." oninput="filterProd()">
                 </div>
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
-                <div class="view-toggle">
-                    <button class="view-btn active" id="btnGrid" onclick="setView('grid')" title="Grid"><i class="fas fa-th-large"></i></button>
-                    <button class="view-btn" id="btnList" onclick="setView('list')" title="List"><i class="fas fa-list"></i></button>
-                </div>
                 <a href="/produk/tambah" class="btn btn-orange"><i class="fas fa-plus"></i> Tambah Produk</a>
             </div>
         </div>
@@ -289,21 +233,18 @@
         <!-- GRID VIEW -->
         <div id="viewGrid">
             <?php if (!empty($daftar_produk)): ?>
+
+            <!-- Grid produk -->
             <div class="prod-grid" id="prodGrid">
-<?php foreach ($daftar_produk as $i => $p): ?>
-
-<?php
-$stokRendah = $p['stok'] <= 5;
-                    
-$fotoUrl = null;
-
-if (!empty($p['foto_produk']) &&
-    is_file(FCPATH . 'uploads/produk/' . $p['foto_produk'])) {
-    $fotoUrl = base_url('uploads/produk/' . $p['foto_produk']);
-}
-?>
-
-                <div class="prod-card" data-nama="<?= strtolower($p['nama_produk']) ?>">
+                <?php foreach ($daftar_produk as $p): ?>
+                <?php
+                    $stokRendah = $p['stok'] <= 5;
+                    $fotoUrl = null;
+                    if (!empty($p['foto_produk']) && is_file(FCPATH . 'uploads/produk/' . $p['foto_produk'])) {
+                        $fotoUrl = base_url('uploads/produk/' . $p['foto_produk']);
+                    }
+                ?>
+                <div class="prod-card" data-nama="<?= strtolower(esc($p['nama_produk'])) ?>">
                     <div class="prod-img">
                         <?php if ($fotoUrl): ?>
                             <img src="<?= $fotoUrl ?>" alt="<?= esc($p['nama_produk']) ?>">
@@ -330,7 +271,8 @@ if (!empty($p['foto_produk']) &&
                             <a href="/produk/edit/<?= $p['id_produk'] ?>" class="btn btn-blue btn-sm" style="flex:1">
                                 <i class="fas fa-pen"></i> Edit
                             </a>
-                            <button class="btn btn-danger btn-sm" onclick="konfirmasiHapus(<?= $p['id_produk'] ?>, '<?= esc($p['nama_produk']) ?>')">
+                            <button class="btn btn-danger btn-sm"
+                                    onclick="konfirmasiHapus(<?= $p['id_produk'] ?>, '<?= esc($p['nama_produk']) ?>')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -338,96 +280,23 @@ if (!empty($p['foto_produk']) &&
                 </div>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Pesan tidak ditemukan (muncul saat pencarian kosong hasil) -->
+            <div class="empty-search" id="emptySearch">
+                <i class="fas fa-search"></i>
+                <div class="es-title">Produk tidak ditemukan</div>
+                <div class="es-sub">Tidak ada produk dengan kata kunci "<span class="es-keyword" id="emptyKeyword"></span>"</div>
+            </div>
+
             <?php else: ?>
             <div class="empty-state">
                 <i class="fas fa-box-open"></i>
                 <p>Belum ada produk</p>
-                <a href="/produk/tambah" class="btn btn-orange" style="margin-top:14px"><i class="fas fa-plus"></i> Tambah Produk</a>
+                <a href="/produk/tambah" class="btn btn-orange" style="margin-top:14px">
+                    <i class="fas fa-plus"></i> Tambah Produk
+                </a>
             </div>
             <?php endif; ?>
-        </div>
-
-        <!-- LIST VIEW -->
-        <div id="viewList" style="display:none;">
-            <div class="card">
-                <div class="card-head">
-                    <div class="card-title"><i class="fas fa-box"></i> Daftar Produk</div>
-                    <span class="badge b-blue"><?= count($daftar_produk) ?> produk</span>
-                </div>
-                <div class="tw">
-                    <table id="prodTable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Foto</th>
-                                <th>Nama Produk</th>
-                                <th>Kategori</th>
-                                <th>Supplier</th>
-                                <th>Harga</th>
-                                <th>Stok</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($daftar_produk)): ?>
-                            <?php foreach ($daftar_produk as $i => $p):
-                                $stokRendah = $p['stok'] <= 5;
-                                // Cek foto di folder
-                                $fotoUrl = null;
-
-                                if (!empty($p['foto_produk']) && 
-                                    file_exists(FCPATH . 'uploads/' . $p['foto_produk'])) {
-                                    $fotoUrl = base_url('uploads/' . $p['foto_produk']);
-                                }
-                            ?>
-                            <tr data-nama="<?= strtolower($p['nama_produk']) ?>">
-                                <td style="color:var(--muted);font-size:12px"><?= $i + 1 ?></td>
-                                <td>
-                                    <div class="prod-thumb-wrap">
-                                        <?php if ($fotoUrl): ?>
-                                            <img src="<?= $fotoUrl ?>" alt="<?= esc($p['nama_produk']) ?>">
-                                        <?php else: ?>
-                                            <i class="fas fa-box"></i>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <strong><?= esc($p['nama_produk']) ?></strong>
-                                </td>
-                                <td>
-                                    <span class="badge b-blue"><?= esc($p['nama_kategori'] ?? '-') ?></span>
-                                </td>
-                                <td style="color:var(--muted)"><?= esc($p['nama_supplier'] ?? '-') ?></td>
-                                <td style="font-weight:700;color:var(--orange-dark)">Rp <?= number_format($p['harga'], 0, ',', '.') ?></td>
-                                <td>
-                                    <span class="badge <?= $stokRendah ? 'b-red' : 'b-muted' ?>">
-                                        <?= $p['stok'] ?><?= $stokRendah ? ' ⚠' : '' ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div style="display:flex;gap:6px;">
-                                        <a href="/produk/edit/<?= $p['id_produk'] ?>" class="btn btn-blue btn-sm">
-                                            <i class="fas fa-pen"></i> Edit
-                                        </a>
-                                        <button class="btn btn-danger btn-sm" onclick="konfirmasiHapus(<?= $p['id_produk'] ?>, '<?= esc($p['nama_produk']) ?>')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                            <?php else: ?>
-                            <tr><td colspan="8">
-                                <div class="empty-state" style="padding:40px">
-                                    <i class="fas fa-box-open" style="font-size:36px;color:var(--blue-dim);display:block;margin-bottom:8px"></i>
-                                    Belum ada produk
-                                </div>
-                            </td></tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -462,7 +331,7 @@ if (!empty($p['foto_produk']) &&
     }
     tick(); setInterval(tick, 1000);
 
-    // AUTO DISMISS FLASH ALERT
+    // AUTO DISMISS FLASH
     const flashAlert = document.getElementById('flashAlert');
     if (flashAlert) {
         setTimeout(() => {
@@ -473,28 +342,46 @@ if (!empty($p['foto_produk']) &&
     }
 
     // SIDEBAR
-    function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sOverlay').classList.add('show'); }
+    function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('sOverlay').classList.add('show'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sOverlay').classList.remove('show'); }
-    window.addEventListener('resize', () => { document.querySelector('.menu-toggle').style.display = window.innerWidth <= 900 ? 'block' : 'none'; });
+    window.addEventListener('resize', () => {
+        document.querySelector('.menu-toggle').style.display = window.innerWidth <= 900 ? 'block' : 'none';
+    });
     window.dispatchEvent(new Event('resize'));
 
-    // VIEW TOGGLE
-    function setView(v) {
-        document.getElementById('viewGrid').style.display = v === 'grid' ? 'block' : 'none';
-        document.getElementById('viewList').style.display = v === 'list' ? 'block' : 'none';
-        document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
-        document.getElementById('btnList').classList.toggle('active', v === 'list');
+    // SEARCH + EMPTY STATE
+    function filterProd() {
+        const q       = document.getElementById('searchInput').value.toLowerCase().trim();
+        const cards   = document.querySelectorAll('.prod-card');
+        const emptyEl = document.getElementById('emptySearch');
+        const gridEl  = document.getElementById('prodGrid');
+        let visible   = 0;
+
+        cards.forEach(c => {
+            const match = (c.dataset.nama || '').includes(q);
+            c.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        if (q === '') {
+            // Reset: semua tampil, pesan sembunyi
+            emptyEl.style.display = 'none';
+            gridEl.style.display  = '';
+        } else if (visible === 0) {
+            // Tidak ada hasil
+            gridEl.style.display             = 'none';
+            emptyEl.style.display            = 'block';
+            document.getElementById('emptyKeyword').textContent = q;
+        } else {
+            // Ada hasil
+            gridEl.style.display  = '';
+            emptyEl.style.display = 'none';
+        }
     }
 
-    // SEARCH
-    function filterProd() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        document.querySelectorAll('.prod-card').forEach(c => {
-            c.style.display = (c.dataset.nama || '').includes(q) ? '' : 'none';
-        });
-        document.querySelectorAll('#prodTable tbody tr[data-nama]').forEach(r => {
-            r.style.display = (r.dataset.nama || '').includes(q) ? '' : 'none';
-        });
+    function resetCari() {
+        document.getElementById('searchInput').value = '';
+        filterProd();
     }
 
     // MODAL HAPUS
@@ -504,7 +391,9 @@ if (!empty($p['foto_produk']) &&
         document.getElementById('modalHapus').classList.add('show');
     }
     function tutupModal() { document.getElementById('modalHapus').classList.remove('show'); }
-    window.addEventListener('click', e => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show'); });
+    window.addEventListener('click', e => {
+        if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
+    });
 </script>
 </body>
 </html>

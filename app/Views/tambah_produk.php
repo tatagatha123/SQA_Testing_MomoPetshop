@@ -66,7 +66,24 @@
         .form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(74,144,226,0.1); }
         .form-control.is-invalid { border-color: var(--red); }
         .form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+
+        /* DISABLED FIELD (kategori & supplier saat edit) */
+        .form-control:disabled,
+        .form-control[disabled] {
+            background: var(--bg);
+            color: var(--muted);
+            cursor: not-allowed;
+            border-color: var(--border);
+            opacity: 1;
+        }
+        .field-locked-note {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 11px; color: var(--muted); margin-top: 5px;
+        }
+        .field-locked-note i { color: var(--orange); font-size: 10px; }
+
         .invalid-feedback { font-size: 11.5px; color: var(--red); margin-top: 4px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .client-error { font-size: 11.5px; color: var(--red); margin-top: 4px; font-weight: 600; display: none; align-items: center; gap: 4px; }
         .form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         select.form-control { cursor: pointer; }
@@ -205,8 +222,9 @@
             </div>
 
             <?php $actionUrl = $produk ? '/produk/update/' . $produk['id_produk'] : '/produk/store'; ?>
+            <?php $isEdit = !empty($produk); ?>
 
-            <form action="<?= $actionUrl ?>" method="post" enctype="multipart/form-data">
+            <form action="<?= $actionUrl ?>" method="post" enctype="multipart/form-data" id="formProduk" novalidate>
                 <?= csrf_field() ?>
 
                 <div class="form-body">
@@ -224,12 +242,20 @@
                             placeholder="Contoh: Royal Canin Adult Cat"
                             value="<?= old('nama_produk', $produk['nama_produk'] ?? '') ?>"
                         >
+                        <!-- Error dari server -->
                         <?php if ($validation && $validation->hasError('nama_produk')): ?>
                         <div class="invalid-feedback">
                             <i class="fas fa-exclamation-circle"></i>
                             <?= $validation->getError('nama_produk') ?>
                         </div>
                         <?php endif; ?>
+                        <!-- Error dari client-side -->
+                        <div class="client-error" id="err_nama_kosong">
+                            <i class="fas fa-exclamation-circle"></i> Nama produk tidak boleh kosong.
+                        </div>
+                        <div class="client-error" id="err_nama_simbol">
+                            <i class="fas fa-exclamation-circle"></i> Nama produk tidak boleh menggunakan karakter khusus (contoh: @, #, $, %, &, *, !, dll).
+                        </div>
                     </div>
 
                     <!-- Harga & Stok -->
@@ -244,7 +270,7 @@
                                 name="harga"
                                 class="form-control <?= ($validation && $validation->hasError('harga')) ? 'is-invalid' : '' ?>"
                                 placeholder="Contoh: 50000"
-                                min="0"
+                                min="1"
                                 step="any"
                                 value="<?= old('harga', $produk['harga'] ?? '') ?>"
                             >
@@ -254,6 +280,12 @@
                                 <?= $validation->getError('harga') ?>
                             </div>
                             <?php endif; ?>
+                            <div class="client-error" id="err_harga_kosong">
+                                <i class="fas fa-exclamation-circle"></i> Harga tidak boleh kosong.
+                            </div>
+                            <div class="client-error" id="err_harga_nol">
+                                <i class="fas fa-exclamation-circle"></i> Harga tidak boleh diisi dengan angka 0 atau minus.
+                            </div>
                         </div>
 
                         <div class="form-group" style="margin-bottom:0">
@@ -275,6 +307,12 @@
                                 <?= $validation->getError('stok') ?>
                             </div>
                             <?php endif; ?>
+                            <div class="client-error" id="err_stok_kosong">
+                                <i class="fas fa-exclamation-circle"></i> Stok tidak boleh kosong.
+                            </div>
+                            <div class="client-error" id="err_stok_nol">
+                                <i class="fas fa-exclamation-circle"></i> Stok tidak boleh diisi dengan angka 0 atau minus.
+                            </div>
                         </div>
                     </div>
 
@@ -287,6 +325,7 @@
                             id="id_kategori"
                             name="id_kategori"
                             class="form-control <?= ($validation && $validation->hasError('id_kategori')) ? 'is-invalid' : '' ?>"
+                            <?= $isEdit ? 'disabled' : '' ?>
                         >
                             <option value="">— Pilih Kategori —</option>
                             <?php foreach ($kategoris as $k): ?>
@@ -295,6 +334,13 @@
                             </option>
                             <?php endforeach; ?>
                         </select>
+                        <?php if ($isEdit): ?>
+                        <!-- Kirim nilai via hidden input karena field disabled tidak ikut POST -->
+                        <input type="hidden" name="id_kategori" value="<?= esc($produk['id_kategori'] ?? '') ?>">
+                        <div class="field-locked-note">
+                            <i class="fas fa-lock"></i> Kategori tidak dapat diubah setelah produk disimpan.
+                        </div>
+                        <?php endif; ?>
                         <?php if ($validation && $validation->hasError('id_kategori')): ?>
                         <div class="invalid-feedback">
                             <i class="fas fa-exclamation-circle"></i>
@@ -312,6 +358,7 @@
                             id="id_supplier"
                             name="id_supplier"
                             class="form-control <?= ($validation && $validation->hasError('id_supplier')) ? 'is-invalid' : '' ?>"
+                            <?= $isEdit ? 'disabled' : '' ?>
                         >
                             <option value="">— Pilih Supplier —</option>
                             <?php foreach ($suppliers as $s): ?>
@@ -320,6 +367,13 @@
                             </option>
                             <?php endforeach; ?>
                         </select>
+                        <?php if ($isEdit): ?>
+                        <!-- Kirim nilai via hidden input karena field disabled tidak ikut POST -->
+                        <input type="hidden" name="id_supplier" value="<?= esc($produk['id_supplier'] ?? '') ?>">
+                        <div class="field-locked-note">
+                            <i class="fas fa-lock"></i> Supplier tidak dapat diubah setelah produk disimpan.
+                        </div>
+                        <?php endif; ?>
                         <?php if ($validation && $validation->hasError('id_supplier')): ?>
                         <div class="invalid-feedback">
                             <i class="fas fa-exclamation-circle"></i>
@@ -328,22 +382,16 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- ══════════════════════════════════════
-                         FOTO PRODUK
-                    ══════════════════════════════════════ -->
+                    <!-- FOTO PRODUK -->
                     <div class="form-group" style="margin-bottom:0">
                         <label class="form-label">
                             Foto Produk
-                            <span class="opt">(opsional · JPG / PNG · maks 2 MB)</span>
+                            <span class="opt">(opsional · JPG / PNG)</span>
                         </label>
 
-                        <?php
-                        // Ambil foto saat ini dari controller (mode edit)
-                        $fotoSekarang = $foto_url ?? null;
-                        ?>
+                        <?php $fotoSekarang = $foto_url ?? null; ?>
 
                         <?php if ($fotoSekarang): ?>
-                        <!-- Foto yang sudah ada (mode edit) -->
                         <div class="foto-preview-box" id="fotoSaatIni">
                             <img src="<?= $fotoSekarang ?>" alt="Foto produk saat ini">
                             <div class="foto-preview-info">
@@ -353,7 +401,6 @@
                         </div>
                         <?php endif; ?>
 
-                        <!-- Preview sebelum upload -->
                         <div class="foto-preview-box" id="newFotoPreview" style="display:none;">
                             <img src="" alt="Preview" id="previewImg">
                             <div class="foto-preview-info">
@@ -365,7 +412,6 @@
                             </button>
                         </div>
 
-                        <!-- Drop zone -->
                         <div class="foto-upload-area" id="uploadArea">
                             <input
                                 type="file"
@@ -376,7 +422,7 @@
                             >
                             <div class="foto-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                             <div class="foto-upload-text">Klik atau seret foto ke sini</div>
-                            <div class="foto-upload-sub">JPG / PNG · Maks 2 MB</div>
+                            <div class="foto-upload-sub">JPG / PNG</div>
                         </div>
 
                         <?php if ($validation && $validation->hasError('foto_produk')): ?>
@@ -393,7 +439,7 @@
                     <a href="/produk" class="btn btn-ghost">
                         <i class="fas fa-arrow-left"></i> Kembali
                     </a>
-                    <button type="submit" class="btn btn-orange">
+                    <button type="submit" class="btn btn-orange" id="submitBtn">
                         <i class="fas fa-save"></i>
                         <?= $produk ? 'Simpan Perubahan' : 'Tambah Produk' ?>
                     </button>
@@ -419,6 +465,98 @@
     window.addEventListener('resize', () => { document.querySelector('.menu-toggle').style.display = window.innerWidth <= 900 ? 'block' : 'none'; });
     window.dispatchEvent(new Event('resize'));
 
+    // ══════════════════════════════════════════
+    // VALIDASI CLIENT-SIDE
+    // ══════════════════════════════════════════
+
+    // Karakter unik/simbol yang tidak diperbolehkan di nama produk
+    const SIMBOL_REGEX = /[^a-zA-Z0-9\s.,\-()\/]/;
+
+    function tampilError(id, show) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = show ? 'flex' : 'none';
+    }
+
+    function setInvalid(input, invalid) {
+        if (invalid) {
+            input.classList.add('is-invalid');
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    }
+
+    // Validasi nama produk (live)
+    const inputNama = document.getElementById('nama_produk');
+    inputNama.addEventListener('input', function () {
+        const val = this.value.trim();
+        const kosong = val === '';
+        const adaSimbol = SIMBOL_REGEX.test(val);
+
+        tampilError('err_nama_kosong', kosong);
+        tampilError('err_nama_simbol', !kosong && adaSimbol);
+        setInvalid(this, kosong || adaSimbol);
+    });
+
+    // Validasi harga (live)
+    const inputHarga = document.getElementById('harga');
+    inputHarga.addEventListener('input', function () {
+        const val = this.value.trim();
+        const kosong = val === '';
+        const nol = !kosong && parseFloat(val) <= 0;
+
+        tampilError('err_harga_kosong', kosong);
+        tampilError('err_harga_nol', nol);
+        setInvalid(this, kosong || nol);
+    });
+
+    // Validasi stok (live)
+    const inputStok = document.getElementById('stok');
+    inputStok.addEventListener('input', function () {
+        const val = this.value.trim();
+        const kosong = val === '';
+        const nol = !kosong && parseInt(val) <= 0;
+
+        tampilError('err_stok_kosong', kosong);
+        tampilError('err_stok_nol', nol);
+        setInvalid(this, kosong || nol);
+    });
+
+    // Validasi saat submit
+    document.getElementById('formProduk').addEventListener('submit', function (e) {
+        let valid = true;
+
+        // -- Nama Produk --
+        const nama = inputNama.value.trim();
+        const namaKosong = nama === '';
+        const namaSimbol = SIMBOL_REGEX.test(nama);
+        tampilError('err_nama_kosong', namaKosong);
+        tampilError('err_nama_simbol', !namaKosong && namaSimbol);
+        setInvalid(inputNama, namaKosong || namaSimbol);
+        if (namaKosong || namaSimbol) valid = false;
+
+        // -- Harga --
+        const harga = inputHarga.value.trim();
+        const hargaKosong = harga === '';
+        const hargaNol = !hargaKosong && parseFloat(harga) <= 0;
+        tampilError('err_harga_kosong', hargaKosong);
+        tampilError('err_harga_nol', hargaNol);
+        setInvalid(inputHarga, hargaKosong || hargaNol);
+        if (hargaKosong || hargaNol) valid = false;
+
+        // -- Stok --
+        const inputStok = document.getElementById('stok');
+        const stok = inputStok.value.trim();
+        const stokKosong = stok === '';
+        const stokNol = !stokKosong && parseInt(stok) <= 0;
+        tampilError('err_stok_kosong', stokKosong);
+        tampilError('err_stok_nol', stokNol);
+        setInvalid(inputStok, stokKosong || stokNol);
+        if (stokKosong || stokNol) valid = false;
+
+        if (!valid) e.preventDefault();
+    });
+
     // FOTO PREVIEW
     function previewFoto(input) {
         const file    = input.files && input.files[0];
@@ -432,7 +570,7 @@
 
         const reader = new FileReader();
         reader.onload = e => {
-            img.src     = e.target.result;
+            img.src            = e.target.result;
             nama.textContent   = file.name;
             ukuran.textContent = (file.size / 1024).toFixed(1) + ' KB';
             preview.style.display = 'flex';
