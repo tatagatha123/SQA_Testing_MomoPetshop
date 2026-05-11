@@ -24,7 +24,7 @@ public class BaseTest {
         driver.manage().window().maximize();
 
         // buka halaman login CI4
-        driver.get("http://localhost:8080/login");
+        driver.get("http://localhost:8083/login");
 
         // tunggu page load
         Thread.sleep(3000);

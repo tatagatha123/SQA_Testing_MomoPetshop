@@ -16,7 +16,7 @@ public class BaseTestWithLogin {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
 
-        driver.get("http://localhost:8080/login");
+        driver.get("http://localhost:8083/login");
 
         LoginPage login = new LoginPage(driver);
         login.login("admin", "123456");

@@ -123,23 +123,23 @@
     </div>
     <nav class="nav-wrap">
         <div class="nav-label">Menu Utama</div>
-        <a href="/dashboard" class="nav-item <?= ($menu === 'dashboard') ? 'active' : '' ?>">
+        <a href="/dashboard" class="nav-item <?= (($menu ?? '') === 'dashboard') ? 'active' : '' ?>">
             <span class="nav-icon"><i class="fas fa-home"></i></span> Dashboard
         </a>
-        <a href="/produk" class="nav-item <?= ($menu === 'produk') ? 'active' : '' ?>">
+        <a href="/produk" class="nav-item <?= (($menu ?? '') === 'produk') ? 'active' : '' ?>">
             <span class="nav-icon"><i class="fas fa-box"></i></span> Produk
         </a>
-        <a href="/transaksi" class="nav-item <?= ($menu === 'transaksi') ? 'active' : '' ?>">
+        <a href="/transaksi" class="nav-item <?= (($menu ?? '') === 'transaksi') ? 'active' : '' ?>">
             <span class="nav-icon"><i class="fas fa-receipt"></i></span> Transaksi
         </a>
-        <a href="/stok-masuk" class="nav-item <?= ($menu === 'stok_masuk') ? 'active' : '' ?>">
+        <a href="/stok-masuk" class="nav-item <?= (($menu ?? '') === 'stok_masuk') ? 'active' : '' ?>">
             <span class="nav-icon"><i class="fas fa-truck-loading"></i></span> Stok Masuk
         </a>
         <div class="nav-label">Manajemen</div>
-        <a href="/user" class="nav-item <?= ($menu === 'user') ? 'active' : '' ?>">
+        <a href="/user" class="nav-item <?= (($menu ?? '') === 'user') ? 'active' : '' ?>">
             <span class="nav-icon"><i class="fas fa-user"></i></span> User
         </a>
-        <a href="/laporan" class="nav-item <?= ($menu === 'laporan') ? 'active' : '' ?>">
+        <a href="/laporan" class="nav-item <?= (($menu ?? '') === 'laporan') ? 'active' : '' ?>">
             <span class="nav-icon"><i class="fas fa-chart-bar"></i></span> Laporan
         </a>
     </nav>
@@ -167,7 +167,7 @@
             </div>
             <div class="topbar-kasir">
                 <div class="kasir-avatar"><?= strtoupper(substr(session()->get('username') ?? 'A', 0, 1)) ?></div>
-                <span class="kasir-name"><?= esc(session()->get('username') ?? 'Admin') ?></span>
+                <span class="kasir-name"><?= !empty(session()->get('username')) ? esc(session()->get('username')) : 'Admin' ?></span>
             </div>
         </div>
     </header>
@@ -187,14 +187,14 @@
             <div class="stat-card">
                 <div class="stat-icon blue"><i class="fas fa-receipt"></i></div>
                 <div>
-                    <div class="stat-val" style="color:var(--blue)"><?= $totalTransaksi ?></div>
+                    <div class="stat-val" style="color:var(--blue)"><?= ($totalTransaksi ?? 0) ?></div>
                     <div class="stat-label">Total Transaksi</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon green"><i class="fas fa-wallet"></i></div>
                 <div>
-                    <div class="stat-val" style="color:#27ae60;font-size:18px">Rp <?= number_format($totalPendapatan, 0, ',', '.') ?></div>
+                    <div class="stat-val" style="color:#27ae60;font-size:18px">Rp <?= number_format($totalPendapatan ?? 0, 0, ',', '.') ?></div>
                     <div class="stat-label">Total Pendapatan</div>
                 </div>
             </div>
@@ -217,14 +217,36 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($transaksi)): ?>
-                            <?php foreach ($transaksi as $trx): ?>
+                            <?php if (!empty($transaksi ?? [])): ?> 
+                                <?php foreach (($transaksi ?? []) as $trx): ?>
                                 <tr>
-                                    <td><span class="badge b-blue">#<?= esc($trx['id_transaksi']) ?></span></td>
-                                    <td><?= date('d M Y', strtotime($trx['tanggal'])) ?></td>
-                                    <td style="color:var(--muted)"><?= date('H:i', strtotime($trx['tanggal'])) ?></td>
-                                    <td><?= esc($trx['kasir'] ?? '-') ?></td>
-                                    <td><strong style="color:#27ae60">Rp <?= number_format($trx['total'], 0, ',', '.') ?></strong></td>
+                                    <td>
+                                        <span class="badge b-blue">
+                                        #<?= ($trx['id_transaksi'] ?? '-') ?>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <?= !empty($trx['tanggal']) 
+                                        ? date('d M Y', strtotime($trx['tanggal'])) 
+                                        : '-' ?>
+                                    </td>
+
+                                    <td style="color:var(--muted)">
+                                        <?= !empty($trx['tanggal']) 
+                                        ? date('H:i', strtotime($trx['tanggal'])) 
+                                        : '-' ?>
+                                    </td>
+                                    
+                                    <td>
+                                        <?= ($trx['kasir'] ?? $trx['username'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <strong style="color:#27ae60">
+                                            Rp <?= number_format($trx['total'] ?? 0, 0, ',', '.') ?>
+                                        </strong>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
