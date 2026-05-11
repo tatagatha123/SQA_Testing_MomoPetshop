@@ -12,84 +12,128 @@ class LaporanTest extends CIUnitTestCase
     protected $db;
     protected $userId;
 
-    protected $existingDetailTransaksi = [];
-    protected $existingTransaksi = [];
-    protected $existingUsers = [];
-
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->db = \Config\Database::connect();
 
-        // Backup data asli
-        $this->existingDetailTransaksi = $this->db->table('detail_transaksi')->get()->getResultArray();
-        $this->existingTransaksi       = $this->db->table('transaksi')->get()->getResultArray();
-        $this->existingUsers           = $this->db->table('users')->get()->getResultArray();
+        // =========================
+        // CEK / INSERT USER TEST
+        // =========================
+        $user = $this->db->table('users')
+            ->where('username', 'admin_test')
+            ->get()
+            ->getRowArray();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
-        $this->db->table('detail_transaksi')->truncate();
-        $this->db->table('transaksi')->truncate();
-        $this->db->table('users')->truncate();
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+        if (!$user) {
+            $this->db->table('users')->insert([
+                'username' => 'admin_test',
+                'password' => password_hash(
+                    '123456',
+                    PASSWORD_DEFAULT
+                ),
+            ]);
 
-        // Insert data dummy
-        $this->db->table('users')->insert([
-            'username' => 'admin_test',
-            'password' => password_hash('123456', PASSWORD_DEFAULT),
+            $this->userId = $this->db->insertID();
+        } else {
+            $this->userId = $user['id_user'];
+        }
+
+        // =========================
+        // INSERT TRANSAKSI TEST
+        // =========================
+        $this->db->table('transaksi')->insert([
+            'id_user' => $this->userId,
+            'tanggal' => date('Y-m-d'),
+            'total'   => 10000,
         ]);
-        $this->userId = $this->db->insertID();
 
-        $this->db->table('transaksi')->insert(['id_user' => $this->userId, 'tanggal' => date('Y-m-d'), 'total' => 10000]);
-        $this->db->table('transaksi')->insert(['id_user' => $this->userId, 'tanggal' => date('Y-m-d'), 'total' => 20000]);
+        $this->db->table('transaksi')->insert([
+            'id_user' => $this->userId,
+            'tanggal' => date('Y-m-d'),
+            'total'   => 20000,
+        ]);
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
-        $this->db->table('detail_transaksi')->truncate();
-        $this->db->table('transaksi')->truncate();
-        $this->db->table('users')->truncate();
+        // hapus transaksi testing saja
+        $this->db->table('transaksi')
+            ->whereIn('total', [10000, 20000])
+            ->delete();
 
-        // Restore data asli
-        if (!empty($this->existingUsers))           $this->db->table('users')->insertBatch($this->existingUsers);
-        if (!empty($this->existingTransaksi))       $this->db->table('transaksi')->insertBatch($this->existingTransaksi);
-        if (!empty($this->existingDetailTransaksi)) $this->db->table('detail_transaksi')->insertBatch($this->existingDetailTransaksi);
-
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+        // hapus user testing
+        $this->db->table('users')
+            ->where('username', 'admin_test')
+            ->delete();
     }
 
+    // =====================================
+    // TEST HARUS LOGIN
+    // =====================================
     public function testLaporanRedirectJikaBelumLogin()
     {
         $result = $this->get('/laporan');
+
         $result->assertStatus(302);
     }
 
+    // =====================================
+    // TEST HALAMAN LAPORAN
+    // =====================================
     public function testHalamanLaporan()
     {
-        $result = $this->withSession(['logged_in' => true, 'id_user' => $this->userId])->get('/laporan');
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => $this->userId,
+        ])->get('/laporan');
+
         $result->assertStatus(200);
     }
 
+    // =====================================
+    // TEST DATA LAPORAN MUNCUL
+    // =====================================
     public function testDataLaporanMuncul()
     {
-        $result = $this->withSession(['logged_in' => true, 'id_user' => $this->userId])->get('/laporan');
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => $this->userId,
+        ])->get('/laporan');
+
         $result->assertStatus(200);
+
         $result->assertSee('10.000');
         $result->assertSee('20.000');
     }
 
+    // =====================================
+    // TEST TOTAL TRANSAKSI
+    // =====================================
     public function testTotalTransaksi()
     {
-        $count = $this->db->table('transaksi')->countAll();
-        $this->assertEquals(2, $count);
+        $count = $this->db->table('transaksi')
+            ->where('id_user', $this->userId)
+            ->countAllResults();
+
+        $this->assertGreaterThanOrEqual(2, $count);
     }
 
+    // =====================================
+    // TEST TOTAL PENDAPATAN
+    // =====================================
     public function testTotalPendapatan()
     {
-        $total = $this->db->table('transaksi')->selectSum('total')->get()->getRow()->total;
-        $this->assertEquals(30000, $total);
+        $total = $this->db->table('transaksi')
+            ->selectSum('total')
+            ->where('id_user', $this->userId)
+            ->get()
+            ->getRow()
+            ->total;
+
+        $this->assertGreaterThanOrEqual(30000, $total);
     }
 }

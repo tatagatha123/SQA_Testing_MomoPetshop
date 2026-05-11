@@ -4,94 +4,147 @@ namespace Tests\Unit;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use App\Models\UserModel;
+use Config\Database;
 
 class UserModelTest extends CIUnitTestCase
 {
     protected $model;
+    protected $db;
 
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->model = new UserModel();
+        $this->db = Database::connect();
+
+        // cek user test
+        $user = $this->db->table('users')
+            ->where('username', 'admin_test')
+            ->get()
+            ->getRowArray();
+
+        // insert kalau belum ada
+        if (!$user) {
+            $this->db->table('users')->insert([
+                'username' => 'admin_test',
+                'password' => password_hash(
+                    '123456',
+                    PASSWORD_DEFAULT
+                ),
+            ]);
+        }
     }
 
-    // Test hash password
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // hapus user testing
+        $this->db->table('users')
+            ->where('username', 'admin_test')
+            ->delete();
+    }
+
+    // =====================================
+    // TEST HASH PASSWORD
+    // =====================================
     public function testHashPassword()
     {
-        $plain = "123456";
-        $hashed = $this->model->hashPassword($plain);
+        $plainPassword = '123456';
 
-        $this->assertNotEquals($plain, $hashed);
-        $this->assertTrue(password_verify($plain, $hashed));
+        $hashedPassword = $this->model
+            ->hashPassword($plainPassword);
+
+        $this->assertNotEquals(
+            $plainPassword,
+            $hashedPassword
+        );
+
+        $this->assertTrue(
+            password_verify(
+                $plainPassword,
+                $hashedPassword
+            )
+        );
     }
 
-    // Test insert + find user
+    // =====================================
+    // TEST USER ADA
+    // =====================================
     public function testFindByUsername()
     {
-        $username = "testuser";
-        $password = $this->model->hashPassword("123");
-
-        $this->model->insert([
-            'username' => $username,
-            'password' => $password
-        ]);
-
-        $user = $this->model->findByUsername($username);
+        $user = $this->model
+            ->findByUsername('admin_test');
 
         $this->assertNotNull($user);
-        $this->assertEquals($username, $user['username']);
+
+        $this->assertIsArray($user);
+
+        $this->assertEquals(
+            'admin_test',
+            $user['username']
+        );
     }
 
-    // Test login berhasil
-    public function testVerifyLoginSuccess()
+    // =====================================
+    // TEST HASH PASSWORD VALID
+    // =====================================
+    public function testAdminPasswordHash()
     {
-        $mock = $this->getMockBuilder(UserModel::class)
-                    ->onlyMethods(['findByUsername'])
-                    ->getMock();
+        $user = $this->model
+            ->findByUsername('admin_test');
 
-        $plainPassword = "123";
-        $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
+        $this->assertNotNull($user);
 
-        $mock->method('findByUsername')
-            ->willReturn([
-                'username' => 'testuser',
-                'password' => $hashedPassword
-            ]);
+        $this->assertTrue(
+            password_verify(
+                '123456',
+                $user['password']
+            )
+        );
+    }
 
-        $result = $mock->verifyLogin('testuser', $plainPassword);
+    // =====================================
+    // TEST LOGIN BERHASIL
+    // =====================================
+    public function testLoginAdmin()
+    {
+        $result = $this->model->verifyLogin(
+            'admin_test',
+            '123456'
+        );
 
         $this->assertNotNull($result);
+
+        $this->assertEquals(
+            'admin_test',
+            $result['username']
+        );
     }
 
-    // Test login gagal (password salah)
+    // =====================================
+    // TEST LOGIN GAGAL
+    // =====================================
     public function testVerifyLoginWrongPassword()
     {
-        $mock = $this->getMockBuilder(UserModel::class)
-                    ->onlyMethods(['findByUsername'])
-                    ->getMock();
-
-        $mock->method('findByUsername')
-            ->willReturn([
-                'username' => 'testuser',
-                'password' => password_hash('123', PASSWORD_BCRYPT)
-            ]);
-
-        $result = $mock->verifyLogin('testuser', 'salah');
+        $result = $this->model->verifyLogin(
+            'admin_test',
+            'password_salah'
+        );
 
         $this->assertNull($result);
     }
 
-    // Test login gagal (user tidak ada)
+    // =====================================
+    // TEST USER TIDAK ADA
+    // =====================================
     public function testVerifyLoginUserNotFound()
     {
-        $mock = $this->getMockBuilder(UserModel::class)
-                    ->onlyMethods(['findByUsername'])
-                    ->getMock();
-
-        $mock->method('findByUsername')
-            ->willReturn(null);
-
-        $result = $mock->verifyLogin('tidakada', '123');
+        $result = $this->model->verifyLogin(
+            'user_tidak_ada',
+            '123456'
+        );
 
         $this->assertNull($result);
     }

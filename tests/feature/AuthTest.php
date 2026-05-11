@@ -11,7 +11,6 @@ class AuthTest extends CIUnitTestCase
     use FeatureTestTrait;
 
     protected $db;
-    protected $existingUsers = [];
 
     protected function setUp(): void
     {
@@ -19,29 +18,37 @@ class AuthTest extends CIUnitTestCase
 
         $this->db = Database::connect();
 
-        // Simpan data asli dulu
-        $this->existingUsers = $this->db->table('users')->get()->getResultArray();
+        // cek apakah user test sudah ada
+        $user = $this->db->table('users')
+            ->where('username', 'testadmin')
+            ->get()
+            ->getRowArray();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $this->db->table('users')->truncate();
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
+        // insert hanya jika belum ada
+        if (!$user) {
+            $this->db->table('users')->insert([
+                'username' => 'testadmin',
+                'password' => password_hash(
+                    '123456',
+                    PASSWORD_DEFAULT
+                ),
+            ]);
+        }
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $this->db->table('users')->truncate();
-
-        // Restore data asli
-        if (!empty($this->existingUsers)) {
-            $this->db->table('users')->insertBatch($this->existingUsers);
-        }
-
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
+        // hapus hanya user testing
+        $this->db->table('users')
+            ->where('username', 'testadmin')
+            ->delete();
     }
 
+    // =====================================
+    // TEST HALAMAN LOGIN
+    // =====================================
     public function testLoginPage()
     {
         $result = $this->get('/login');
@@ -49,10 +56,13 @@ class AuthTest extends CIUnitTestCase
         $result->assertStatus(200);
     }
 
+    // =====================================
+    // TEST REGISTER
+    // =====================================
     public function testRegisterSuccess()
     {
         $result = $this->withBodyFormat('json')->post('/register', [
-            'username' => 'testuser',
+            'username' => 'userbaru',
             'password' => '123456',
             'konfirmasi_password' => '123456',
         ]);
@@ -60,36 +70,35 @@ class AuthTest extends CIUnitTestCase
         $result->assertRedirectTo('/login');
     }
 
+    // =====================================
+    // TEST LOGIN BERHASIL
+    // =====================================
     public function testLoginSuccess()
     {
-        $this->db->table('users')->insert([
-            'username' => 'admin',
-            'password' => password_hash('123456', PASSWORD_DEFAULT),
-        ]);
-
         $result = $this->withBodyFormat('json')->post('/login', [
-            'username' => 'admin',
+            'username' => 'testadmin',
             'password' => '123456',
         ]);
 
         $result->assertRedirectTo('/dashboard');
     }
 
+    // =====================================
+    // TEST LOGIN GAGAL
+    // =====================================
     public function testLoginFailed()
     {
-        $this->db->table('users')->insert([
-            'username' => 'admin',
-            'password' => password_hash('123456', PASSWORD_DEFAULT),
-        ]);
-
         $result = $this->post('/login', [
-            'username' => 'admin',
+            'username' => 'testadmin',
             'password' => 'salah',
         ]);
 
         $result->assertStatus(200);
     }
 
+    // =====================================
+    // TEST LOGOUT
+    // =====================================
     public function testLogout()
     {
         session()->set([

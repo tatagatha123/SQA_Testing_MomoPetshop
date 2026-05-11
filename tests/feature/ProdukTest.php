@@ -11,13 +11,9 @@ class ProdukTest extends CIUnitTestCase
     use FeatureTestTrait;
 
     protected $db;
+
     protected $kategoriId;
     protected $supplierId;
-
-    protected $existingStokMasuk = [];
-    protected $existingProduk = [];
-    protected $existingKategori = [];
-    protected $existingSupplier = [];
 
     protected function setUp(): void
     {
@@ -25,86 +21,141 @@ class ProdukTest extends CIUnitTestCase
 
         $this->db = Database::connect();
 
-        // Backup data asli
-        $this->existingStokMasuk = $this->db->table('stok_masuk')->get()->getResultArray();
-        $this->existingProduk    = $this->db->table('produk')->get()->getResultArray();
-        $this->existingKategori  = $this->db->table('kategori')->get()->getResultArray();
-        $this->existingSupplier  = $this->db->table('supplier')->get()->getResultArray();
+        // ===============================
+        // KATEGORI TEST
+        // ===============================
+        $kategori = $this->db->table('kategori')
+            ->where('nama_kategori', 'TEST KATEGORI')
+            ->get()
+            ->getRowArray();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $this->db->table('stok_masuk')->truncate();
-        $this->db->table('produk')->truncate();
-        $this->db->table('kategori')->truncate();
-        $this->db->table('supplier')->truncate();
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
+        if (!$kategori) {
+            $this->db->table('kategori')->insert([
+                'nama_kategori' => 'TEST KATEGORI'
+            ]);
 
-        // Insert data dummy
-        $this->db->table('kategori')->insert(['nama_kategori' => 'TEST KATEGORI']);
-        $this->kategoriId = $this->db->insertID();
+            $this->kategoriId = $this->db->insertID();
+        } else {
+            $this->kategoriId = $kategori['id_kategori'];
+        }
 
-        $this->db->table('supplier')->insert(['nama_supplier' => 'TEST SUPPLIER', 'no_telp' => '08123']);
-        $this->supplierId = $this->db->insertID();
+        // ===============================
+        // SUPPLIER TEST
+        // ===============================
+        $supplier = $this->db->table('supplier')
+            ->where('nama_supplier', 'TEST SUPPLIER')
+            ->get()
+            ->getRowArray();
+
+        if (!$supplier) {
+            $this->db->table('supplier')->insert([
+                'nama_supplier' => 'TEST SUPPLIER',
+                'no_telp'       => '08123'
+            ]);
+
+            $this->supplierId = $this->db->insertID();
+        } else {
+            $this->supplierId = $supplier['id_supplier'];
+        }
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $this->db->table('stok_masuk')->truncate();
-        $this->db->table('produk')->truncate();
-        $this->db->table('kategori')->truncate();
-        $this->db->table('supplier')->truncate();
+        // hapus stok masuk test
+        $this->db->table('stok_masuk')
+        ->where('jumlah >', -1)
+        ->delete();
 
-        // Restore data asli
-        if (!empty($this->existingSupplier))  $this->db->table('supplier')->insertBatch($this->existingSupplier);
-        if (!empty($this->existingKategori))  $this->db->table('kategori')->insertBatch($this->existingKategori);
-        if (!empty($this->existingProduk))    $this->db->table('produk')->insertBatch($this->existingProduk);
-        if (!empty($this->existingStokMasuk)) $this->db->table('stok_masuk')->insertBatch($this->existingStokMasuk);
+        // hapus produk test
+        $this->db->table('produk')
+            ->whereIn('nama_produk', [
+                'Whiskas',
+                'TEST'
+            ])
+            ->delete();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
+        // hapus kategori test
+        $this->db->table('kategori')
+            ->where('nama_kategori', 'TEST KATEGORI')
+            ->delete();
+
+        // hapus supplier test
+        $this->db->table('supplier')
+            ->where('nama_supplier', 'TEST SUPPLIER')
+            ->delete();
     }
 
+    // ===============================
+    // TEST HALAMAN PRODUK
+    // ===============================
     public function testIndexProduk()
     {
-        $result = $this->withSession(['logged_in' => true, 'id_user' => 1])->get('/produk');
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => 1,
+        ])->get('/produk');
+
         $result->assertStatus(200);
     }
 
+    // ===============================
+    // TEST HALAMAN TAMBAH
+    // ===============================
     public function testTambahProduk()
     {
-        $result = $this->withSession(['logged_in' => true, 'id_user' => 1])->get('/produk/tambah');
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => 1,
+        ])->get('/produk/tambah');
+
         $result->assertStatus(200);
     }
 
+    // ===============================
+    // TEST STORE SUCCESS
+    // ===============================
     public function testStoreProdukSuccess()
     {
-        $result = $this->withSession(['logged_in' => true, 'id_user' => 1])
-            ->withBodyFormat('json')
-            ->post('/produk/store', [
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => 1,
+        ])->withBodyFormat('json')
+          ->post('/produk/store', [
                 'nama_produk' => 'Whiskas',
                 'harga'       => 10000,
                 'stok'        => 5,
                 'id_kategori' => $this->kategoriId,
                 'id_supplier' => $this->supplierId,
             ]);
+
         $result->assertRedirectTo('/produk');
     }
 
+    // ===============================
+    // TEST VALIDASI GAGAL
+    // ===============================
     public function testStoreProdukValidationFailed()
     {
-        $result = $this->withSession(['logged_in' => true, 'id_user' => 1])
-            ->withBodyFormat('json')
-            ->post('/produk/store', [
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => 1,
+        ])->withBodyFormat('json')
+          ->post('/produk/store', [
                 'nama_produk' => '',
                 'harga'       => '',
                 'stok'        => '',
                 'id_kategori' => '',
                 'id_supplier' => '',
             ]);
+
         $result->assertStatus(200);
     }
 
+    // ===============================
+    // TEST DELETE PRODUK
+    // ===============================
     public function testDeleteProduk()
     {
         $this->db->table('produk')->insert([
@@ -114,10 +165,14 @@ class ProdukTest extends CIUnitTestCase
             'id_kategori' => $this->kategoriId,
             'id_supplier' => $this->supplierId,
         ]);
+
         $idProduk = $this->db->insertID();
 
-        $result = $this->withSession(['logged_in' => true, 'id_user' => 1])
-            ->get('/produk/delete/' . $idProduk);
+        $result = $this->withSession([
+            'logged_in' => true,
+            'id_user'   => 1,
+        ])->get('/produk/delete/' . $idProduk);
+
         $result->assertRedirectTo('/produk');
     }
 }

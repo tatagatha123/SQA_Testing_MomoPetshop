@@ -29,7 +29,7 @@ class Database extends Config
         'hostname'     => 'localhost',
         'username'     => 'root',
         'password'     => '',
-        'database'     => 'CIPetshopTest',
+        'database'     => 'momo_petshop',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -167,7 +167,7 @@ class Database extends Config
         'hostname'    => 'localhost',
         'username'    => 'root',
         'password'    => '',
-        'database'    => 'CIPetshopTest',
+        'database'    => 'momo_petshop',
         'DBDriver'    => 'MySQLi',
         'DBPrefix'    => '',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE FOR CI DEVS
         'pConnect'    => false,
@@ -190,7 +190,7 @@ class Database extends Config
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
         if (ENVIRONMENT === 'testing') {
-            $this->defaultGroup = 'default';
+            $this->defaultGroup = 'tests';
         }
     }
 }

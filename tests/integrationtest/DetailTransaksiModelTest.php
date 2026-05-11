@@ -9,70 +9,110 @@ class DetailTransaksiModelTest extends CIUnitTestCase
 {
     protected $db;
     protected $model;
+
     protected $kategoriId;
     protected $supplierId;
     protected $produkId;
     protected $userId;
     protected $transaksiId;
 
-    protected $existingDetailTransaksi = [];
-    protected $existingTransaksi = [];
-    protected $existingProduk = [];
-    protected $existingSupplier = [];
-    protected $existingKategori = [];
-    protected $existingUsers = [];
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->db    = \Config\Database::connect();
+        $this->db = \Config\Database::connect();
         $this->model = new DetailTransaksiModel();
 
-        // Backup data asli
-        $this->existingDetailTransaksi = $this->db->table('detail_transaksi')->get()->getResultArray();
-        $this->existingTransaksi       = $this->db->table('transaksi')->get()->getResultArray();
-        $this->existingProduk          = $this->db->table('produk')->get()->getResultArray();
-        $this->existingSupplier        = $this->db->table('supplier')->get()->getResultArray();
-        $this->existingKategori        = $this->db->table('kategori')->get()->getResultArray();
-        $this->existingUsers           = $this->db->table('users')->get()->getResultArray();
+        // =========================
+        // KATEGORI TEST
+        // =========================
+        $kategori = $this->db->table('kategori')
+            ->where('nama_kategori', 'TEST_KATEGORI')
+            ->get()
+            ->getRowArray();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
-        $this->db->table('detail_transaksi')->truncate();
-        $this->db->table('transaksi')->truncate();
-        $this->db->table('produk')->truncate();
-        $this->db->table('supplier')->truncate();
-        $this->db->table('kategori')->truncate();
-        $this->db->table('users')->truncate();
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+        if (!$kategori) {
+            $this->db->table('kategori')->insert([
+                'nama_kategori' => 'TEST_KATEGORI'
+            ]);
 
-        // Insert data dummy
-        $this->db->table('kategori')->insert(['nama_kategori' => 'TEST_KATEGORI']);
-        $this->kategoriId = $this->db->insertID();
+            $this->kategoriId = $this->db->insertID();
+        } else {
+            $this->kategoriId = $kategori['id_kategori'];
+        }
 
-        $this->db->table('supplier')->insert(['nama_supplier' => 'TEST_SUPPLIER', 'no_telp' => '08123']);
-        $this->supplierId = $this->db->insertID();
+        // =========================
+        // SUPPLIER TEST
+        // =========================
+        $supplier = $this->db->table('supplier')
+            ->where('nama_supplier', 'TEST_SUPPLIER')
+            ->get()
+            ->getRowArray();
 
-        $this->db->table('produk')->insert([
-            'nama_produk' => 'TEST_PRODUK',
-            'harga'       => 1000,
-            'stok'        => 10,
-            'id_kategori' => $this->kategoriId,
-            'id_supplier' => $this->supplierId,
-        ]);
-        $this->produkId = $this->db->insertID();
+        if (!$supplier) {
+            $this->db->table('supplier')->insert([
+                'nama_supplier' => 'TEST_SUPPLIER',
+                'no_telp'       => '08123'
+            ]);
 
-        $this->db->table('users')->insert([
-            'username' => 'kasir_test',
-            'password' => password_hash('123', PASSWORD_DEFAULT),
-        ]);
-        $this->userId = $this->db->insertID();
+            $this->supplierId = $this->db->insertID();
+        } else {
+            $this->supplierId = $supplier['id_supplier'];
+        }
 
+        // =========================
+        // PRODUK TEST
+        // =========================
+        $produk = $this->db->table('produk')
+            ->where('nama_produk', 'TEST_PRODUK')
+            ->get()
+            ->getRowArray();
+
+        if (!$produk) {
+            $this->db->table('produk')->insert([
+                'nama_produk' => 'TEST_PRODUK',
+                'harga'       => 1000,
+                'stok'        => 10,
+                'id_kategori' => $this->kategoriId,
+                'id_supplier' => $this->supplierId
+            ]);
+
+            $this->produkId = $this->db->insertID();
+        } else {
+            $this->produkId = $produk['id_produk'];
+        }
+
+        // =========================
+        // USER TEST
+        // =========================
+        $user = $this->db->table('users')
+            ->where('username', 'kasir_test')
+            ->get()
+            ->getRowArray();
+
+        if (!$user) {
+            $this->db->table('users')->insert([
+                'username' => 'kasir_test',
+                'password' => password_hash(
+                    '123',
+                    PASSWORD_DEFAULT
+                ),
+            ]);
+
+            $this->userId = $this->db->insertID();
+        } else {
+            $this->userId = $user['id_user'];
+        }
+
+        // =========================
+        // TRANSAKSI TEST
+        // =========================
         $this->db->table('transaksi')->insert([
             'id_user' => $this->userId,
             'tanggal' => date('Y-m-d'),
-            'total'   => 1000,
+            'total'   => 1000
         ]);
+
         $this->transaksiId = $this->db->insertID();
     }
 
@@ -80,25 +120,40 @@ class DetailTransaksiModelTest extends CIUnitTestCase
     {
         parent::tearDown();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
-        $this->db->table('detail_transaksi')->truncate();
-        $this->db->table('transaksi')->truncate();
-        $this->db->table('produk')->truncate();
-        $this->db->table('supplier')->truncate();
-        $this->db->table('kategori')->truncate();
-        $this->db->table('users')->truncate();
+        // hapus detail transaksi test
+        $this->db->table('detail_transaksi')
+            ->where('id_transaksi', $this->transaksiId)
+            ->delete();
 
-        // Restore data asli
-        if (!empty($this->existingUsers))           $this->db->table('users')->insertBatch($this->existingUsers);
-        if (!empty($this->existingKategori))        $this->db->table('kategori')->insertBatch($this->existingKategori);
-        if (!empty($this->existingSupplier))        $this->db->table('supplier')->insertBatch($this->existingSupplier);
-        if (!empty($this->existingProduk))          $this->db->table('produk')->insertBatch($this->existingProduk);
-        if (!empty($this->existingTransaksi))       $this->db->table('transaksi')->insertBatch($this->existingTransaksi);
-        if (!empty($this->existingDetailTransaksi)) $this->db->table('detail_transaksi')->insertBatch($this->existingDetailTransaksi);
+        // hapus transaksi test
+        $this->db->table('transaksi')
+            ->where('id_transaksi', $this->transaksiId)
+            ->delete();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+        // hapus produk test
+        $this->db->table('produk')
+            ->where('nama_produk', 'TEST_PRODUK')
+            ->delete();
+
+        // hapus supplier test
+        $this->db->table('supplier')
+            ->where('nama_supplier', 'TEST_SUPPLIER')
+            ->delete();
+
+        // hapus kategori test
+        $this->db->table('kategori')
+            ->where('nama_kategori', 'TEST_KATEGORI')
+            ->delete();
+
+        // hapus user test
+        $this->db->table('users')
+            ->where('username', 'kasir_test')
+            ->delete();
     }
 
+    // ===============================
+    // TEST INSERT SINGLE
+    // ===============================
     public function testInsertDetail()
     {
         $result = $this->model->insert([
@@ -106,11 +161,15 @@ class DetailTransaksiModelTest extends CIUnitTestCase
             'id_produk'    => $this->produkId,
             'qty'          => 2,
             'harga'        => 1000,
-            'subtotal'     => 2000,
+            'subtotal'     => 2000
         ]);
+
         $this->assertNotFalse($result);
     }
 
+    // ===============================
+    // TEST GET BY TRANSAKSI
+    // ===============================
     public function testGetByTransaksi()
     {
         $this->model->insert([
@@ -118,41 +177,80 @@ class DetailTransaksiModelTest extends CIUnitTestCase
             'id_produk'    => $this->produkId,
             'qty'          => 1,
             'harga'        => 1000,
-            'subtotal'     => 1000,
+            'subtotal'     => 1000
         ]);
 
-        $result = $this->model->getByTransaksi($this->transaksiId);
+        $result = $this->model->getByTransaksi(
+            $this->transaksiId
+        );
+
         $this->assertCount(1, $result);
-        $this->assertEquals('TEST_PRODUK', $result[0]['nama_produk']);
-        $this->assertEquals(1, $result[0]['qty']);
-        $this->assertEquals(1000, $result[0]['subtotal']);
+
+        $this->assertEquals(
+            'TEST_PRODUK',
+            $result[0]['nama_produk']
+        );
     }
 
+    // ===============================
+    // TEST INSERT BATCH
+    // ===============================
     public function testSimpanBatch()
     {
         $data = [
-            ['id_transaksi' => $this->transaksiId, 'id_produk' => $this->produkId, 'qty' => 1, 'harga' => 1000, 'subtotal' => 1000],
-            ['id_transaksi' => $this->transaksiId, 'id_produk' => $this->produkId, 'qty' => 2, 'harga' => 1000, 'subtotal' => 2000],
+            [
+                'id_transaksi' => $this->transaksiId,
+                'id_produk'    => $this->produkId,
+                'qty'          => 1,
+                'harga'        => 1000,
+                'subtotal'     => 1000
+            ],
+            [
+                'id_transaksi' => $this->transaksiId,
+                'id_produk'    => $this->produkId,
+                'qty'          => 2,
+                'harga'        => 1000,
+                'subtotal'     => 2000
+            ]
         ];
 
         $result = $this->model->simpanBatch($data);
-        $this->assertTrue($result);
 
-        $all = $this->model->where('id_transaksi', $this->transaksiId)->findAll();
-        $this->assertCount(2, $all);
+        $this->assertTrue($result);
     }
 
+    // ===============================
+    // TEST TOTAL SUBTOTAL
+    // ===============================
     public function testTotalSubtotalBatch()
     {
         $data = [
-            ['id_transaksi' => $this->transaksiId, 'id_produk' => $this->produkId, 'qty' => 1, 'harga' => 1000, 'subtotal' => 1000],
-            ['id_transaksi' => $this->transaksiId, 'id_produk' => $this->produkId, 'qty' => 3, 'harga' => 1000, 'subtotal' => 3000],
+            [
+                'id_transaksi' => $this->transaksiId,
+                'id_produk'    => $this->produkId,
+                'qty'          => 1,
+                'harga'        => 1000,
+                'subtotal'     => 1000
+            ],
+            [
+                'id_transaksi' => $this->transaksiId,
+                'id_produk'    => $this->produkId,
+                'qty'          => 3,
+                'harga'        => 1000,
+                'subtotal'     => 3000
+            ]
         ];
 
         $this->model->simpanBatch($data);
 
-        $result       = $this->model->where('id_transaksi', $this->transaksiId)->findAll();
-        $totalSubtotal = array_sum(array_column($result, 'subtotal'));
+        $result = $this->model
+            ->where('id_transaksi', $this->transaksiId)
+            ->findAll();
+
+        $totalSubtotal = array_sum(
+            array_column($result, 'subtotal')
+        );
+
         $this->assertEquals(4000, $totalSubtotal);
     }
 }

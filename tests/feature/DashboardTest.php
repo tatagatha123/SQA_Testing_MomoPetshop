@@ -12,72 +12,110 @@ class DashboardTest extends CIUnitTestCase
 
     protected $db;
 
-    protected $existingDetailTransaksi = [];
-    protected $existingTransaksi = [];
-    protected $existingStokMasuk = [];
-    protected $existingProduk = [];
-    protected $existingSupplier = [];
-    protected $existingKategori = [];
-    protected $existingUsers = [];
-
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->db = Database::connect();
 
-        // Backup data asli
-        $this->existingDetailTransaksi = $this->db->table('detail_transaksi')->get()->getResultArray();
-        $this->existingTransaksi       = $this->db->table('transaksi')->get()->getResultArray();
-        $this->existingStokMasuk       = $this->db->table('stok_masuk')->get()->getResultArray();
-        $this->existingProduk          = $this->db->table('produk')->get()->getResultArray();
-        $this->existingSupplier        = $this->db->table('supplier')->get()->getResultArray();
-        $this->existingKategori        = $this->db->table('kategori')->get()->getResultArray();
-        $this->existingUsers           = $this->db->table('users')->get()->getResultArray();
+        // =========================
+        // USER TEST
+        // =========================
+        $user = $this->db->table('users')
+            ->where('username', 'admin_test')
+            ->get()
+            ->getRowArray();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $this->db->table('detail_transaksi')->truncate();
-        $this->db->table('transaksi')->truncate();
-        $this->db->table('stok_masuk')->truncate();
-        $this->db->table('produk')->truncate();
-        $this->db->table('supplier')->truncate();
-        $this->db->table('kategori')->truncate();
-        $this->db->table('users')->truncate();
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
+        if (!$user) {
+            $this->db->table('users')->insert([
+                'username' => 'admin_test',
+                'password' => password_hash(
+                    '123456',
+                    PASSWORD_DEFAULT
+                ),
+            ]);
 
-        // Insert data dummy
-        $this->db->table('users')->insert([
-            'username' => 'admin_test',
-            'password' => password_hash('123456', PASSWORD_DEFAULT),
-        ]);
-        $userId = $this->db->insertID();
+            $userId = $this->db->insertID();
+        } else {
+            $userId = $user['id_user'];
+        }
 
-        $this->db->table('kategori')->insert(['nama_kategori' => 'Makanan']);
-        $kategoriId = $this->db->insertID();
+        // =========================
+        // KATEGORI TEST
+        // =========================
+        $kategori = $this->db->table('kategori')
+            ->where('nama_kategori', 'Kategori Test')
+            ->get()
+            ->getRowArray();
 
-        $this->db->table('supplier')->insert(['nama_supplier' => 'Supplier Test', 'no_telp' => '08123']);
-        $supplierId = $this->db->insertID();
+        if (!$kategori) {
+            $this->db->table('kategori')->insert([
+                'nama_kategori' => 'Kategori Test'
+            ]);
 
-        $this->db->table('produk')->insert([
-            'nama_produk' => 'Whiskas',
-            'harga'       => 10000,
-            'stok'        => 20,
-            'id_kategori' => $kategoriId,
-            'id_supplier' => $supplierId,
-        ]);
-        $produkId = $this->db->insertID();
+            $kategoriId = $this->db->insertID();
+        } else {
+            $kategoriId = $kategori['id_kategori'];
+        }
 
+        // =========================
+        // SUPPLIER TEST
+        // =========================
+        $supplier = $this->db->table('supplier')
+            ->where('nama_supplier', 'Supplier Test')
+            ->get()
+            ->getRowArray();
+
+        if (!$supplier) {
+            $this->db->table('supplier')->insert([
+                'nama_supplier' => 'Supplier Test',
+                'no_telp'       => '08123'
+            ]);
+
+            $supplierId = $this->db->insertID();
+        } else {
+            $supplierId = $supplier['id_supplier'];
+        }
+
+        // =========================
+        // PRODUK TEST
+        // =========================
+        $produk = $this->db->table('produk')
+            ->where('nama_produk', 'Whiskas Test')
+            ->get()
+            ->getRowArray();
+
+        if (!$produk) {
+            $this->db->table('produk')->insert([
+                'nama_produk' => 'Whiskas Test',
+                'harga'       => 10000,
+                'stok'        => 20,
+                'id_kategori' => $kategoriId,
+                'id_supplier' => $supplierId
+            ]);
+
+            $produkId = $this->db->insertID();
+        } else {
+            $produkId = $produk['id_produk'];
+        }
+
+        // =========================
+        // TRANSAKSI TEST
+        // =========================
         $this->db->table('transaksi')->insert([
             'id_user' => $userId,
             'tanggal' => date('Y-m-d'),
-            'total'   => 50000,
+            'total'   => 50000
         ]);
 
+        // =========================
+        // STOK MASUK TEST
+        // =========================
         $this->db->table('stok_masuk')->insert([
             'id_produk'   => $produkId,
             'id_supplier' => $supplierId,
             'jumlah'      => 5,
-            'tanggal'     => date('Y-m-d'),
+            'tanggal'     => date('Y-m-d')
         ]);
     }
 
@@ -85,43 +123,67 @@ class DashboardTest extends CIUnitTestCase
     {
         parent::tearDown();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
-        $this->db->table('detail_transaksi')->truncate();
-        $this->db->table('transaksi')->truncate();
-        $this->db->table('stok_masuk')->truncate();
-        $this->db->table('produk')->truncate();
-        $this->db->table('supplier')->truncate();
-        $this->db->table('kategori')->truncate();
-        $this->db->table('users')->truncate();
+        // hapus hanya data testing
+        $this->db->table('stok_masuk')
+            ->where('jumlah', 5)
+            ->delete();
 
-        // Restore data asli
-        if (!empty($this->existingUsers))           $this->db->table('users')->insertBatch($this->existingUsers);
-        if (!empty($this->existingKategori))        $this->db->table('kategori')->insertBatch($this->existingKategori);
-        if (!empty($this->existingSupplier))        $this->db->table('supplier')->insertBatch($this->existingSupplier);
-        if (!empty($this->existingProduk))          $this->db->table('produk')->insertBatch($this->existingProduk);
-        if (!empty($this->existingStokMasuk))       $this->db->table('stok_masuk')->insertBatch($this->existingStokMasuk);
-        if (!empty($this->existingTransaksi))       $this->db->table('transaksi')->insertBatch($this->existingTransaksi);
-        if (!empty($this->existingDetailTransaksi)) $this->db->table('detail_transaksi')->insertBatch($this->existingDetailTransaksi);
+        $this->db->table('transaksi')
+            ->where('total', 50000)
+            ->delete();
 
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
+        $this->db->table('produk')
+            ->where('nama_produk', 'Whiskas Test')
+            ->delete();
+
+        $this->db->table('supplier')
+            ->where('nama_supplier', 'Supplier Test')
+            ->delete();
+
+        $this->db->table('kategori')
+            ->where('nama_kategori', 'Kategori Test')
+            ->delete();
+
+        $this->db->table('users')
+            ->where('username', 'admin_test')
+            ->delete();
     }
 
+    // =====================================
+    // TEST REDIRECT JIKA BELUM LOGIN
+    // =====================================
     public function testDashboardRedirectJikaBelumLogin()
     {
         $result = $this->get('/dashboard');
+
         $result->assertRedirectTo('/login');
     }
 
+    // =====================================
+    // TEST DASHBOARD BERHASIL DIAKSES
+    // =====================================
     public function testDashboardBerhasilDiaksesSaatLogin()
     {
-        $result = $this->withSession(['logged_in' => true, 'username' => 'admin_test'])->get('/dashboard');
+        $result = $this->withSession([
+            'logged_in' => true,
+            'username'  => 'admin_test'
+        ])->get('/dashboard');
+
         $result->assertStatus(200);
     }
 
+    // =====================================
+    // TEST DASHBOARD MENAMPILKAN DATA
+    // =====================================
     public function testDashboardMenampilkanData()
     {
-        $result = $this->withSession(['logged_in' => true, 'username' => 'admin_test'])->get('/dashboard');
+        $result = $this->withSession([
+            'logged_in' => true,
+            'username'  => 'admin_test'
+        ])->get('/dashboard');
+
         $result->assertStatus(200);
+
         $result->assertSee('Momo Petshop');
         $result->assertSee('admin_test');
     }

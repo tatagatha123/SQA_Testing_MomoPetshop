@@ -25,6 +25,14 @@ defined('APP_NAMESPACE') || define('APP_NAMESPACE', 'App');
  */
 defined('COMPOSER_PATH') || define('COMPOSER_PATH', ROOTPATH . 'vendor/autoload.php');
 
+defined('SYSTEMPATH') || define('SYSTEMPATH', realpath(rtrim(__DIR__, '\\/ ') . DIRECTORY_SEPARATOR . '../../vendor/codeigniter4/framework/system') . DIRECTORY_SEPARATOR);
+defined('ROOTPATH')   || define('ROOTPATH', realpath(SYSTEMPATH . '../..') . DIRECTORY_SEPARATOR);
+defined('APPPATH')    || define('APPPATH', realpath(ROOTPATH . 'app') . DIRECTORY_SEPARATOR);
+defined('WRITEPATH')  || define('WRITEPATH', realpath(ROOTPATH . 'writable') . DIRECTORY_SEPARATOR);
+defined('TESTPATH')   || define('TESTPATH', realpath(ROOTPATH . 'tests') . DIRECTORY_SEPARATOR);
+defined('PUBLICPATH') || define('PUBLICPATH', realpath(ROOTPATH . 'public') . DIRECTORY_SEPARATOR);
+defined('FCPATH')     || define('FCPATH', PUBLICPATH);
+defined('SUPPORTPATH') || define('SUPPORTPATH', realpath(SYSTEMPATH . 'Commands/Generators/Views/') . DIRECTORY_SEPARATOR);
 /*
  |--------------------------------------------------------------------------
  | Timing Constants
