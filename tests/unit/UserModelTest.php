@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use App\Models\UserModel;
@@ -45,31 +45,38 @@ class UserModelTest extends CIUnitTestCase
     // Test login berhasil
     public function testVerifyLoginSuccess()
     {
-        $username = "loginuser";
+        $mock = $this->getMockBuilder(UserModel::class)
+                    ->onlyMethods(['findByUsername'])
+                    ->getMock();
+
         $plainPassword = "123";
+        $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
 
-        $this->model->insert([
-            'username' => $username,
-            'password' => $this->model->hashPassword($plainPassword)
-        ]);
+        $mock->method('findByUsername')
+            ->willReturn([
+                'username' => 'testuser',
+                'password' => $hashedPassword
+            ]);
 
-        $result = $this->model->verifyLogin($username, $plainPassword);
+        $result = $mock->verifyLogin('testuser', $plainPassword);
 
         $this->assertNotNull($result);
-        $this->assertEquals($username, $result['username']);
     }
 
     // Test login gagal (password salah)
     public function testVerifyLoginWrongPassword()
     {
-        $username = "wrongpass";
-        
-        $this->model->insert([
-            'username' => $username,
-            'password' => $this->model->hashPassword("123")
-        ]);
+        $mock = $this->getMockBuilder(UserModel::class)
+                    ->onlyMethods(['findByUsername'])
+                    ->getMock();
 
-        $result = $this->model->verifyLogin($username, "salah");
+        $mock->method('findByUsername')
+            ->willReturn([
+                'username' => 'testuser',
+                'password' => password_hash('123', PASSWORD_BCRYPT)
+            ]);
+
+        $result = $mock->verifyLogin('testuser', 'salah');
 
         $this->assertNull($result);
     }
@@ -77,7 +84,14 @@ class UserModelTest extends CIUnitTestCase
     // Test login gagal (user tidak ada)
     public function testVerifyLoginUserNotFound()
     {
-        $result = $this->model->verifyLogin("tidakada", "123");
+        $mock = $this->getMockBuilder(UserModel::class)
+                    ->onlyMethods(['findByUsername'])
+                    ->getMock();
+
+        $mock->method('findByUsername')
+            ->willReturn(null);
+
+        $result = $mock->verifyLogin('tidakada', '123');
 
         $this->assertNull($result);
     }

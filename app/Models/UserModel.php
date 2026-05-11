@@ -14,11 +14,13 @@ class UserModel extends Model
     protected $allowedFields    = ['username', 'password'];
     protected $useTimestamps    = false;
 
+    // Cari user berdasarkan username
     public function findByUsername(string $username): ?array
     {
         return $this->where('username', $username)->first();
     }
 
+    // Verifikasi login pengguna
     public function verifyLogin(string $username, string $password): ?array
     {
         $user = $this->findByUsername($username);
@@ -28,6 +30,7 @@ class UserModel extends Model
         return null;
     }
 
+    // Hash password sebelum disimpan
     public function hashPassword(string $plainPassword): string
     {
         return password_hash($plainPassword, PASSWORD_BCRYPT);
