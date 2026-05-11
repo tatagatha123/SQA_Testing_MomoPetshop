@@ -8,16 +8,19 @@ use Config\Database;
 
 class AuthTest extends CIUnitTestCase
 {
-
     use FeatureTestTrait;
 
     protected $db;
+    protected $existingUsers = [];
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->db = Database::connect();
+
+        // Simpan data asli dulu
+        $this->existingUsers = $this->db->table('users')->get()->getResultArray();
 
         $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
         $this->db->table('users')->truncate();
@@ -30,6 +33,12 @@ class AuthTest extends CIUnitTestCase
 
         $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
         $this->db->table('users')->truncate();
+
+        // Restore data asli
+        if (!empty($this->existingUsers)) {
+            $this->db->table('users')->insertBatch($this->existingUsers);
+        }
+
         $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
     }
 
