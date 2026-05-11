@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use App\Models\UserModel;
