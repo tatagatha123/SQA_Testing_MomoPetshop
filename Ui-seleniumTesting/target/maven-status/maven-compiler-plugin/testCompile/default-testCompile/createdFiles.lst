@@ -1,0 +1,16 @@
+tests/StokMasukTest.class
+tests/LaporanTest.class
+pages/TransaksiPage.class
+pages/DashboardPage.class
+pages/LaporanPage.class
+pages/UserPage.class
+base/BaseTestWithLogin.class
+test/TransaksiTest.class
+pages/StokMasukPage.class
+pages/ProdukPage.class
+tests/LoginTest.class
+tests/UserTest.class
+test/ProdukTest.class
+pages/LoginPage.class
+tests/DashboardTest.class
+base/BaseTest.class

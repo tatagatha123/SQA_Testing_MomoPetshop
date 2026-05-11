@@ -99,7 +99,7 @@
                 <label class="form-label">Username</label>
                 <div class="input-wrap">
                     <i class="fas fa-user prefix"></i>
-                    <input type="text" name="username"
+                    <input type="text" id="username" name="username"
                         class="form-control <?= ($validation && $validation->hasError('username')) ? 'is-invalid' : '' ?>"
                         placeholder="Masukkan username"
                         value="<?= old('username') ?>"
@@ -127,7 +127,7 @@
                 <?php endif; ?>
             </div>
 
-            <button type="submit" class="btn-submit">
+            <button type="submit"  id="loginButton" class="btn-submit">
                 <i class="fas fa-sign-in-alt"></i> Masuk
             </button>
         </form>

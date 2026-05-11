@@ -1,0 +1,16 @@
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/StokMasukPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/StokMasukTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/UserPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/LaporanTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/ProdukTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/LoginTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/TransaksiPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/base/BaseTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/DashboardTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/DashboardPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/LoginPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/ProdukPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/TransaksiTest.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/base/BaseTestWithLogin.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/pages/LaporanPage.java
+/opt/lampp/htdocs/SQA_MomoPetshop/Ui-seleniumTesting/src/test/java/tests/UserTest.java

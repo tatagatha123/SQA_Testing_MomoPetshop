@@ -261,7 +261,7 @@
             </div>
         </div>
 
-        <div class="stok-alert">
+        <!-- <div class="stok-alert">
             <i class="fas fa-exclamation-triangle"></i>
             <div>
                 <strong>Perhatian stok!</strong>
@@ -269,7 +269,7 @@
                     <a href="/produk" style="color:var(--orange-dark);font-weight:700">Cek sekarang →</a>
                 </span>
             </div>
-        </div>
+        </div> -->
 
         <div class="recent-grid">
             <div class="card">
